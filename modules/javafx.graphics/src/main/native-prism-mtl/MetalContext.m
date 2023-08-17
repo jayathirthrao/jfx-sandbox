@@ -145,6 +145,16 @@
         rttPassDesc.colorAttachments[0].loadAction = MTLLoadActionClear;
     }
 
+    if ([[self getRTT] isMSAAEnabled]) {
+        rttPassDesc.colorAttachments[0].storeAction = MTLStoreActionStoreAndMultisampleResolve;
+        rttPassDesc.colorAttachments[0].texture = [rtt getMSAATexture];
+        rttPassDesc.colorAttachments[0].resolveTexture = [rtt getTexture];
+    } else {
+        rttPassDesc.colorAttachments[0].storeAction = MTLStoreActionStore;
+        rttPassDesc.colorAttachments[0].texture = [rtt getTexture];
+        rttPassDesc.colorAttachments[0].resolveTexture = nil;
+    }
+
     id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:rttPassDesc];
     id<MTLBuffer> currentShaderArgBuffer = [[self getCurrentShader] getArgumentBuffer];
 
@@ -358,6 +368,16 @@
         clearRegion = MTLRegionMake2D(scissorRect.x, scissorRect.y, scissorRect.width, scissorRect.height);
     }
 
+    if ([[self getRTT] isMSAAEnabled]) {
+        rttPassDesc.colorAttachments[0].storeAction = MTLStoreActionStoreAndMultisampleResolve;
+        rttPassDesc.colorAttachments[0].texture = [rtt getMSAATexture];
+        rttPassDesc.colorAttachments[0].resolveTexture = [rtt getTexture];
+    } else {
+        rttPassDesc.colorAttachments[0].storeAction = MTLStoreActionStore;
+        rttPassDesc.colorAttachments[0].texture = [rtt getTexture];
+        rttPassDesc.colorAttachments[0].resolveTexture = nil;
+    }
+
     CTX_LOG(@"     MetalContext.clearRTT() scissorRect.x = %lu, scissorRect.y = %lu, scissorRect.width = %lu, scissorRect.height = %lu, color = %u",
                     scissorRect.x, scissorRect.y, scissorRect.width, scissorRect.height, color);
     CTX_LOG(@"     MetalContext.clearRTT() %lu , %lu", [rtt getTexture].width, [rtt getTexture].height);
@@ -506,21 +526,9 @@
     CTX_LOG(@"MetalContext_setDeviceParametersFor3D()");
     id<MTLCommandBuffer> commandBuffer = [self getCurrentCommandBuffer];
     phongRPD = [MTLRenderPassDescriptor new];
-    if (!rttCleared) {
-        phongRPD.colorAttachments[0].loadAction = MTLLoadActionClear;
-    }
-    if (clearDepthTexture &&
-        depthEnabled) {
-        phongRPD.depthAttachment.loadAction = MTLLoadActionClear;
-    }
-    phongRPD.colorAttachments[0].clearColor =
-        MTLClearColorMake(clearColor[0],
-                          clearColor[1],
-                          clearColor[2],
-                          clearColor[3]);
+    phongRPD.colorAttachments[0].loadAction = MTLLoadActionLoad;
 
     if ([[self getRTT] isMSAAEnabled]) {
-        phongRPD.colorAttachments[0].loadAction = MTLLoadActionClear;
         phongRPD.colorAttachments[0].storeAction = MTLStoreActionStoreAndMultisampleResolve;
         phongRPD.colorAttachments[0].texture = [rtt getMSAATexture];
         phongRPD.colorAttachments[0].resolveTexture = [rtt getTexture];
@@ -531,8 +539,12 @@
     }
     if (depthEnabled) {
         phongRPD.depthAttachment.clearDepth = 1.0;
-        if ([[self getRTT] isMSAAEnabled]) {
+        if (clearDepthTexture) {
             phongRPD.depthAttachment.loadAction = MTLLoadActionClear;
+        } else {
+            phongRPD.depthAttachment.loadAction = MTLLoadActionLoad;
+        }
+        if ([[self getRTT] isMSAAEnabled]) {
             phongRPD.depthAttachment.storeAction = MTLStoreActionStoreAndMultisampleResolve;
             phongRPD.depthAttachment.texture = [rtt getDepthMSAATexture];
             phongRPD.depthAttachment.resolveTexture = [rtt getDepthTexture];
@@ -579,9 +591,19 @@
     return cPos;
 }
 
+- (MTLScissorRect) getScissorRect
+{
+    return scissorRect;
+}
+
 - (bool) isDepthEnabled
 {
     return depthEnabled;
+}
+
+- (bool) isScissorEnabled
+{
+    return isScissorEnabled;
 }
 
 // TODO: MTL: This was copied from GlassHelper, and could be moved to a utility class.
