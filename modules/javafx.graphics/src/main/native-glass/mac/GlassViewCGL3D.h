@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,47 +23,31 @@
  * questions.
  */
 
-#import <Foundation/Foundation.h>
-#import "GlassOffscreen.h"
-
-@interface GlassFrameBufferObject : NSObject <GlassOffscreenProtocol>
-{
-    unsigned int _width;
-    unsigned int _height;
-
-    id<MTLTexture> _texture;
-    BOOL   _isSwPipe;
-}
-
-- (void)blitFromFBO:(GlassFrameBufferObject*)other_fbo;
-- (id<MTLTexture>)texture;
-- (void)setIsSwPipe:(BOOL)isSwPipe;
-
-@end
-
-/*
-#import <Foundation/Foundation.h>
-
+#import <Cocoa/Cocoa.h>
 #import <OpenGL/gl.h>
 #import <OpenGL/OpenGL.h>
 
-#import "GlassOffscreen.h"
+#import "GlassView.h"
+#import "GlassCGLOffscreen.h"
 
-@interface GlassFrameBufferObject : NSObject <GlassOffscreenProtocol>
+// 3D version of Glass providing OpenGL context through CAOpenGLLayer
+@interface GlassViewCGL3D : NSOpenGLView
 {
-    GLuint _width;
-    GLuint _height;
+    GlassViewDelegate   *_delegate;
 
-    GLuint _texture;
-    GLuint _fbo;
-    GLuint _fboToRestore;
-    BOOL   _isSwPipe;
+    NSTrackingArea      *_trackingArea;
+
+    CGFloat             _backgroundR;
+    CGFloat             _backgroundG;
+    CGFloat             _backgroundB;
+    CGFloat             _backgroundA;
+
+    BOOL isHiDPIAware;
 }
 
-- (void)blitFromFBO:(GlassFrameBufferObject*)other_fbo;
-- (GLuint)texture;
-- (GLuint)fbo;
-- (void)setIsSwPipe:(BOOL)isSwPipe;
+- (GlassViewDelegate*)getDelegate;
+- (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties;
+- (void)setFrameOrigin:(NSPoint)newOrigin;
+- (BOOL)isHiDPIAware;
 
 @end
-*/

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,59 +23,47 @@
  * questions.
  */
 
-#import <Metal/Metal.h>
-#import <QuartzCore/CAMetalLayer.h>
-#import "GlassOffscreen.h"
+#import <Foundation/Foundation.h>
+#import "GlassMTLOffscreen.h"
 
-@interface GlassLayer3D : CAMetalLayer
+@interface GlassMTLFrameBufferObject : NSObject <GlassMTLOffscreenProtocol>
 {
-    GlassOffscreen *_painterOffscreen;
+    unsigned int _width;
+    unsigned int _height;
 
-    BOOL isHiDPIAware;
-    id<MTLCommandQueue> _blitCommandQueue;
+    id<MTLTexture> _texture;
+    BOOL   _isSwPipe;
 }
 
-- (id) init:(long)mtlCommandQueuePtr
-       withIsSwPipe:(BOOL)isSwPipe;
-- (void)notifyScaleFactorChanged:(CGFloat)scale;
-- (void) updateOffscreenTexture:(void*)pixels
-                     layerWidth:(int)width
-                     layerHeight:(int)height;
-
-- (void) blitToScreen;
-
-- (GlassOffscreen*)getPainterOffscreen;
-- (void)flush;
-- (void)display;
+- (void)blitFromFBO:(GlassMTLFrameBufferObject*)other_fbo;
+- (id<MTLTexture>)texture;
+- (void)setIsSwPipe:(BOOL)isSwPipe;
 
 @end
 
-
 /*
+#import <Foundation/Foundation.h>
+
 #import <OpenGL/gl.h>
 #import <OpenGL/OpenGL.h>
 
 #import "GlassOffscreen.h"
 
-@interface GlassLayer3D : CAOpenGLLayer
+@interface GlassFrameBufferObject : NSObject <GlassOffscreenProtocol>
 {
-    GlassOffscreen *_glassOffscreen;
-    GlassOffscreen *_painterOffscreen;
+    GLuint _width;
+    GLuint _height;
 
-    BOOL isHiDPIAware;
+    GLuint _texture;
+    GLuint _fbo;
+    GLuint _fboToRestore;
+    BOOL   _isSwPipe;
 }
 
-- (id)initWithSharedContext:(CGLContextObj)ctx
-           andClientContext:(CGLContextObj)clCtx
-             withHiDPIAware:(BOOL)HiDPIAware
-             withIsSwPipe:(BOOL)isSwPipe;
-
-- (GlassOffscreen*)getPainterOffscreen;
-- (GlassOffscreen*)getGlassOffscreen;
-- (void)hostOffscreen:(GlassOffscreen*)offscreen;
-- (void)flush;
-
-- (void)notifyScaleFactorChanged:(CGFloat)scale;
+- (void)blitFromFBO:(GlassFrameBufferObject*)other_fbo;
+- (GLuint)texture;
+- (GLuint)fbo;
+- (void)setIsSwPipe:(BOOL)isSwPipe;
 
 @end
 */

@@ -25,9 +25,9 @@
 
 
 
-#import "GlassOffscreen.h"
+#import "GlassMTLOffscreen.h"
 
-#import "GlassFrameBufferObject.h"
+#import "GlassMTLFrameBufferObject.h"
 //#import "GlassPBuffer.h"
 
 //#define VERBOSE
@@ -42,7 +42,7 @@
 // - (void)unsetContext;
 // @end
 
-@implementation GlassOffscreen
+@implementation GlassMTLOffscreen
 
 - (id)initWithContext:(id<MTLDevice>) device
             andIsSwPipe:(BOOL)isSwPipe;
@@ -59,13 +59,13 @@
 
         //[self setContext];
         {
-            self->_offscreen = [[GlassFrameBufferObject alloc] init];
+            self->_offscreen = [[GlassMTLFrameBufferObject alloc] init];
             if (self->_offscreen == nil)
             {
                 // TODO: implement PBuffer if needed
                 //self->_offscreen = [[GlassPBuffer alloc] init];
             }
-            [(GlassFrameBufferObject*)self->_offscreen setIsSwPipe:(BOOL)isSwPipe];
+            [(GlassMTLFrameBufferObject*)self->_offscreen setIsSwPipe:(BOOL)isSwPipe];
         }
         //[self unsetContext];
     }
@@ -144,7 +144,7 @@
 
 - (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height
 {
-    //NSLog(@"GlassOffscreen -------- w x h : %d x %d", width, height);
+    //NSLog(@"GlassMTLOffscreen -------- w x h : %d x %d", width, height);
     //[self setContext];
     [self->_offscreen bindForWidth:width andHeight:height];
 }
@@ -205,11 +205,11 @@
     return self->_dirty;
 }
 
-- (void)blitFromOffscreen:(GlassOffscreen*) other_offscreen
+- (void)blitFromOffscreen:(GlassMTLOffscreen*) other_offscreen
 {
     //[self setContext];
     {
-        [(GlassFrameBufferObject*)self->_offscreen blitFromFBO:(GlassFrameBufferObject*)other_offscreen->_offscreen];
+        [(GlassMTLFrameBufferObject*)self->_offscreen blitFromFBO:(GlassMTLFrameBufferObject*)other_offscreen->_offscreen];
         self->_dirty = true;
     }
     //[self unsetContext];

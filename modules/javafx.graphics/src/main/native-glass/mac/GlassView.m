@@ -35,8 +35,10 @@
 #import "GlassMacros.h"
 #import "GlassWindow.h"
 #import "GlassView3D.h"
+#import "GlassViewMTL3D.h"
+#import "GlassViewCGL3D.h"
 #import "GlassHelper.h"
-#import "GlassLayer3D.h"
+#import "GlassLayerMTL3D.h"
 
 //#define VERBOSE
 #ifndef VERBOSE
@@ -339,7 +341,7 @@ JNIEXPORT jlong JNICALL Java_com_sun_glass_ui_mac_MacView__1getNativeFrameBuffer
     GLASS_POOL_ENTER;
     {
         NSView<GlassView> *view = getGlassView(env, jPtr);
-        GlassLayer3D *layer = (GlassLayer3D*)[view layer];
+        GlassLayerMTL3D *layer = (GlassLayerMTL3D*)[view layer];
         fb = (jlong) [[layer getPainterOffscreen] fbo];
     }
     GLASS_POOL_EXIT;

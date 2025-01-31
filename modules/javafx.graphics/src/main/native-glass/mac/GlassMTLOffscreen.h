@@ -28,7 +28,7 @@
 #import <Metal/Metal.h>
 #import <QuartzCore/CAMetalLayer.h>
 
-@protocol GlassOffscreenProtocol
+@protocol GlassMTLOffscreenProtocol
 
 // as destination (to draw into)
 - (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
@@ -43,9 +43,9 @@
 
 @end
 
-@interface GlassOffscreen : NSObject <GlassOffscreenProtocol>
+@interface GlassMTLOffscreen : NSObject <GlassMTLOffscreenProtocol>
 {
-   id<GlassOffscreenProtocol>  _offscreen;
+   id<GlassMTLOffscreenProtocol>  _offscreen;
 
     bool                      _dirty;
 
@@ -71,6 +71,6 @@
 - (bool)isDirty;
 - (jlong)fbo;
 
-- (void)blitFromOffscreen:(GlassOffscreen*) other_offscreen;
+- (void)blitFromOffscreen:(GlassMTLOffscreen*) other_offscreen;
 
 @end

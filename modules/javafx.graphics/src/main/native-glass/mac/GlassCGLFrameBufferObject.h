@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,41 +23,27 @@
  * questions.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
-#import "GlassView.h"
-#import "GlassViewMTL3D.h"
-#import "GlassViewCGL3D.h"
-//#import "GlassCGLOffscreen.h"
+#import <OpenGL/gl.h>
+#import <OpenGL/OpenGL.h>
 
-// 3D version of Glass providing OpenGL context through CAOpenGLLayer
-@interface GlassView3D : NSView <GlassView, NSTextInputClient>
+#import "GlassCGLOffscreen.h"
+
+@interface GlassCGLFrameBufferObject : NSObject <GlassCGLOffscreenProtocol>
 {
-    GlassViewDelegate   *_delegate;
-    GlassViewMTL3D *mtlView;
+    GLuint _width;
+    GLuint _height;
 
-    GlassViewCGL3D *cglView;
-
-    NSView *view;
-
-    NSUInteger          _drawCounter; // draw counter, so that we only bind/unbind offscreen once
-
-    GLuint              _texture;
-    GLuint              _textureWidth;
-    GLuint              _textureHeight;
-
-    NSAttributedString *nsAttrBuffer;
-    BOOL imEnabled;
-    BOOL handlingKeyEvent;
-    BOOL didCommitText;
-    BOOL isMtl;
-
-    NSEvent *lastKeyEvent;
+    GLuint _texture;
+    GLuint _fbo;
+    GLuint _fboToRestore;
+    BOOL   _isSwPipe;
 }
 
-- (GlassViewDelegate*)delegate;
-- (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties;
-- (void)setFrameOrigin:(NSPoint)newOrigin;
-- (NSView*)getView;
+- (void)blitFromFBO:(GlassCGLFrameBufferObject*)other_fbo;
+- (GLuint)texture;
+- (GLuint)fbo;
+- (void)setIsSwPipe:(BOOL)isSwPipe;
 
 @end

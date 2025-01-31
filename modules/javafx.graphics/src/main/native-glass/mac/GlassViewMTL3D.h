@@ -24,40 +24,22 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import <Metal/Metal.h>
 
 #import "GlassView.h"
-#import "GlassViewMTL3D.h"
-#import "GlassViewCGL3D.h"
-//#import "GlassCGLOffscreen.h"
+#import "GlassMTLOffscreen.h"
 
-// 3D version of Glass providing OpenGL context through CAOpenGLLayer
-@interface GlassView3D : NSView <GlassView, NSTextInputClient>
+@interface GlassViewMTL3D : NSView
 {
     GlassViewDelegate   *_delegate;
-    GlassViewMTL3D *mtlView;
 
-    GlassViewCGL3D *cglView;
-
-    NSView *view;
-
-    NSUInteger          _drawCounter; // draw counter, so that we only bind/unbind offscreen once
-
-    GLuint              _texture;
-    GLuint              _textureWidth;
-    GLuint              _textureHeight;
-
-    NSAttributedString *nsAttrBuffer;
-    BOOL imEnabled;
-    BOOL handlingKeyEvent;
-    BOOL didCommitText;
-    BOOL isMtl;
+    NSTrackingArea      *_trackingArea;
 
     NSEvent *lastKeyEvent;
 }
 
-- (GlassViewDelegate*)delegate;
+- (GlassViewDelegate*)getDelegate;
 - (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties;
 - (void)setFrameOrigin:(NSPoint)newOrigin;
-- (NSView*)getView;
 
 @end

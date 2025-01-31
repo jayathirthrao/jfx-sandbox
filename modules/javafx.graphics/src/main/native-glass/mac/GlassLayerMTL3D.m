@@ -23,7 +23,7 @@
  * questions.
  */
 
-#import "GlassLayer3D.h"
+#import "GlassLayerMTL3D.h"
 
 #import "GlassMacros.h"
 #import "GlassScreen.h"
@@ -35,7 +35,7 @@
     #define LOG(MSG, ...) GLASS_LOG(MSG, ## __VA_ARGS__);
 #endif
 
-@implementation GlassLayer3D
+@implementation GlassLayerMTL3D
 
 static NSArray *allModes = nil;
 
@@ -73,7 +73,7 @@ static NSArray *allModes = nil;
     } else {
         self->_blitCommandQueue = [self.device newCommandQueue];
     }
-    self->_painterOffscreen = [[GlassOffscreen alloc] initWithContext:nil andIsSwPipe:isSwPipe];
+    self->_painterOffscreen = [[GlassMTLOffscreen alloc] initWithContext:nil andIsSwPipe:isSwPipe];
     [self->_painterOffscreen setLayer:self];
 
     if (allModes == nil) {
@@ -142,12 +142,12 @@ static NSArray *allModes = nil;
     }
 }
 
-- (GlassOffscreen*)getPainterOffscreen
+- (GlassMTLOffscreen*)getPainterOffscreen
 {
     return self->_painterOffscreen;
 }
 /*
-- (GlassOffscreen*)getGlassOffscreen
+- (GlassMTLOffscreen*)getGlassOffscreen
 {
     return self->_glassOffscreen;
 }

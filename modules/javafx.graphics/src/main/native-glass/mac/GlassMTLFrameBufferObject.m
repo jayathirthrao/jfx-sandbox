@@ -23,7 +23,7 @@
  * questions.
  */
 
-#import "GlassFrameBufferObject.h"
+#import "GlassMTLFrameBufferObject.h"
 #import "GlassMacros.h"
 #import "GlassApplication.h"
 
@@ -34,13 +34,13 @@
     #define LOG(MSG, ...) GLASS_LOG(MSG, ## __VA_ARGS__);
 #endif
 
-@implementation GlassFrameBufferObject
+@implementation GlassMTLFrameBufferObject
 
 - (void)_destroyFbo
 {
     if (self->_texture != 0)
     {
-        LOG("GlassFrameBufferObject releasing FBO :%lu", self->_texture);
+        LOG("GlassMTLFrameBufferObject releasing FBO :%lu", self->_texture);
         [self->_texture release];
         self->_texture = 0;
     }
@@ -111,7 +111,7 @@
 
 - (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height
 {
-    LOG("           GlassFrameBufferObject bindForWidth:%d andHeight:%d", width, height);
+    LOG("           GlassMTLFrameBufferObject bindForWidth:%d andHeight:%d", width, height);
     {
         if ((width > 0) && (height > 0))
         {
@@ -137,7 +137,7 @@
     //TODO: MTL:
 }
 
-- (void)blitFromFBO:(GlassFrameBufferObject*)other_fbo
+- (void)blitFromFBO:(GlassMTLFrameBufferObject*)other_fbo
 {
     [self _createFboIfNeededForWidth:other_fbo->_width andHeight:other_fbo->_height];
 }
