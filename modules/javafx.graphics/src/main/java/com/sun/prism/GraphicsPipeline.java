@@ -201,7 +201,8 @@ public abstract class GraphicsPipeline {
         // This change should be reverted in future.
         if (PlatformUtil.isMac()) {
             if (!(PrismSettings.tryOrder.contains("mtl") ||
-                 (PrismSettings.tryOrder.contains("sw")))) {
+                 (PrismSettings.tryOrder.contains("sw")) ||
+                 (PrismSettings.tryOrder.contains("es2")))) {
                 System.err.println("*** This ea release supports only mtl & sw pipeline, mtl pipeline is default.");
                 System.err.println("*** Other pipelines(es2) are not supported.");
                 System.err.println("*** Use only: -Dprism.order=mtl or -Dprism.order=sw");

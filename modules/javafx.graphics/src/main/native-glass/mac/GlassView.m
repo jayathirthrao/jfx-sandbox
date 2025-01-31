@@ -34,9 +34,10 @@
 
 #import "GlassMacros.h"
 #import "GlassWindow.h"
-#import "GlassView3D.h"
+#import "GlassViewMTL3D.h"
+#import "GlassViewCGL3D.h"
 #import "GlassHelper.h"
-#import "GlassLayer3D.h"
+#import "GlassLayerMTL3D.h"
 
 //#define VERBOSE
 #ifndef VERBOSE
@@ -298,7 +299,34 @@ JNIEXPORT jlong JNICALL Java_com_sun_glass_ui_mac_MacView__1create
 
         //NSLog(@"--- hostView bounds = (%f, %f) - (%f, %f)", [hostView bounds].origin.x, [hostView bounds].origin.y, [hostView bounds].size.width, [hostView bounds].size.height);
 
-        NSView* view = [[GlassView3D alloc] initWithFrame:[hostView bounds] withJview:jView withJproperties:jCapabilities];
+        long mtlCommandQueuePtr = 0l;
+        if (jCapabilities != NULL)
+        {
+            jobject mtlCommandQueueKey = (*env)->NewStringUTF(env, "mtlCommandQueue");
+            jobject mtlCommandQueueValue = (*env)->CallObjectMethod(env, jCapabilities, jMapGetMethod, mtlCommandQueueKey);
+            //NSLog(@"---- mtlCommandQueueKey = %p", mtlCommandQueueKey);
+            //NSLog(@"---- mtlCommandQueueValue = %p", mtlCommandQueueValue);
+            GLASS_CHECK_EXCEPTION(env);
+            if (mtlCommandQueueValue != NULL)
+            {
+                jlong jmtlQueuePtr = (*env)->CallLongMethod(env, mtlCommandQueueValue, jLongValueMethod);
+                GLASS_CHECK_EXCEPTION(env);
+                if (jmtlQueuePtr != 0)
+                {
+                    //NSLog(@"--- GLASS metal command queue ptr = %ld", jmtlQueuePtr);
+
+                    //TODO: MTL: This enables sharing of MTLCommandQueue between PRISM and GLASS, if needed.
+                    //Note : Currently, PRISM and GLASS create their own dedicated MTLCommandQueue
+                    mtlCommandQueuePtr = jmtlQueuePtr;
+                }
+            }
+        }
+        NSView* view;
+        if (mtlCommandQueuePtr != 0l) {
+            view = [[GlassViewMTL3D alloc] initWithFrame:[hostView bounds] withJview:jView withJproperties:jCapabilities];
+        } else {
+            view = [[GlassViewCGL3D alloc] initWithFrame:[hostView bounds] withJview:jView withJproperties:jCapabilities];
+        }
         [view setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
 
         [hostView addSubview:view];
@@ -339,7 +367,7 @@ JNIEXPORT jlong JNICALL Java_com_sun_glass_ui_mac_MacView__1getNativeFrameBuffer
     GLASS_POOL_ENTER;
     {
         NSView<GlassView> *view = getGlassView(env, jPtr);
-        GlassLayer3D *layer = (GlassLayer3D*)[view layer];
+        GlassLayerMTL3D *layer = (GlassLayerMTL3D*)[view layer];
         fb = (jlong) [[layer getPainterOffscreen] fbo];
     }
     GLASS_POOL_EXIT;
