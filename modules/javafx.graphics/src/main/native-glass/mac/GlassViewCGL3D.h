@@ -33,9 +33,6 @@
 // 3D version of Glass providing OpenGL context through CAOpenGLLayer
 @interface GlassViewCGL3D : NSOpenGLView
 {
-    GlassViewDelegate   *_delegate;
-
-    NSTrackingArea      *_trackingArea;
 
     CGFloat             _backgroundR;
     CGFloat             _backgroundG;
@@ -45,9 +42,8 @@
     BOOL isHiDPIAware;
 }
 
-- (GlassViewDelegate*)getDelegate;
+- (CALayer*)getLayer;
 - (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties;
-- (void)setFrameOrigin:(NSPoint)newOrigin;
 - (BOOL)isHiDPIAware;
 
 @end

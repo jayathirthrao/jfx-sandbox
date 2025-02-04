@@ -31,15 +31,10 @@
 
 @interface GlassViewMTL3D : NSView
 {
-    GlassViewDelegate   *_delegate;
 
-    NSTrackingArea      *_trackingArea;
-
-    NSEvent *lastKeyEvent;
 }
 
-- (GlassViewDelegate*)getDelegate;
+- (CALayer*)getLayer;
 - (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties;
-- (void)setFrameOrigin:(NSPoint)newOrigin;
 
 @end

@@ -109,24 +109,35 @@
         }
     }
 
-    self->nsAttrBuffer = [[NSAttributedString alloc] initWithString:@""];
-    self->imEnabled = NO;
-    self->handlingKeyEvent = NO;
-    self->didCommitText = NO;
-    lastKeyEvent = nil;
-
-    if (mtlCommandQueuePtr != 0l) {
-        self->isMtl = YES;
-        mtlView = [[GlassViewMTL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
-        self->_delegate = [mtlView getDelegate];
-        view = mtlView;
-    } else {
-        self->isMtl = NO;
-        self->_drawCounter = 0;
-        self->_texture = 0;
-        cglView = [[GlassViewCGL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
-        self->_delegate = [cglView getDelegate];
-        view = cglView;
+    self = [super initWithFrame:frame];
+    if (self != nil) {
+        if (mtlCommandQueuePtr != 0l) {
+            self->isMtl = YES;
+            mtlView = [[GlassViewMTL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
+            self->_layer = [mtlView getLayer];
+            [mtlView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
+            [self addSubview:mtlView];
+            view = mtlView;
+        } else {
+            self->isMtl = NO;
+            self->_drawCounter = 0;
+            self->_texture = 0;
+            cglView = [[GlassViewCGL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
+            self->_layer = [cglView getLayer];
+            [cglView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
+            [self addSubview:cglView];
+            view = cglView;
+        }
+        self->_delegate = [[GlassViewDelegate alloc] initWithView:self withJview:jView];
+        self->_trackingArea = [[NSTrackingArea alloc] initWithRect:frame
+                                                           options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect)
+                                                             owner:self userInfo:nil];
+        [self addTrackingArea: self->_trackingArea];
+        self->nsAttrBuffer = [[NSAttributedString alloc] initWithString:@""];
+        self->imEnabled = NO;
+        self->handlingKeyEvent = NO;
+        self->didCommitText = NO;
+        lastKeyEvent = nil;
     }
     //self->_delegate = [[GlassViewDelegate alloc] initWithView:view withJview:jView];
     return self;
@@ -134,13 +145,6 @@
 
 - (void)dealloc
 {
-    /*if (self->isMtl) {
-        [mtlView dealloc];
-        mtlView = nil;
-    } else {
-        [cglView dealloc];
-        cglView = nil;
-    }*/
     if (self->_texture != 0)
     {
         GlassLayerCGL3D *layer = (GlassLayerCGL3D*)[view layer];
@@ -150,9 +154,11 @@
         }
         [[layer getPainterOffscreen] unbind];
     }
-    [view dealloc];
-    //[self->_delegate release];
-    //self->_delegate = nil;
+    [self removeTrackingArea: self->_trackingArea];
+    [self->_trackingArea release];
+    self->_trackingArea = nil;
+    [self->_delegate release];
+    self->_delegate = nil;
     [self->nsAttrBuffer release];
     self->nsAttrBuffer = nil;
     [lastKeyEvent release];
@@ -208,40 +214,32 @@
 // also called when closing window, when [self window] == nil
 - (void)viewDidMoveToWindow
 {
-    /*if (self->isMtl) {
-        [mtlView viewDidMoveToWindow];
-    } else {
-        [cglView viewDidMoveToWindow];
-    }*/
     [view viewDidMoveToWindow];
     [self->_delegate viewDidMoveToWindow];
 }
 
 - (void)setFrameOrigin:(NSPoint)newOrigin
 {
-    [view setFrameOrigin:newOrigin];
+    [super setFrameOrigin:newOrigin];
     [self->_delegate setFrameOrigin:newOrigin];
-    //[[view getDelegate] setFrameOrigin:newOrigin];
 }
 
 - (void)setFrameSize:(NSSize)newSize
 {
-    [view setFrameSize:newSize];
+    [super setFrameSize:newSize];
     [self->_delegate setFrameSize:newSize];
 }
 
 - (void)setFrame:(NSRect)frameRect
 {
-    [view setFrame:frameRect];
+    [super setFrame:frameRect];
     [self->_delegate setFrame:frameRect];
-    //[[view getDelegate] setFrame:frameRect];
 }
 
 - (void)updateTrackingAreas
 {
-    [view updateTrackingAreas];
+    [super updateTrackingAreas];
     [self->_delegate updateTrackingAreas];
-    //[[view getDelegate] updateTrackingAreas];
 }
 
 - (void)mouseEntered:(NSEvent *)theEvent
@@ -866,6 +864,11 @@
 - (NSView*)getView
 {
     return view;
+}
+
+- (CALayer*)getLayer
+{
+    return self->_layer;
 }
 
 - (GlassViewDelegate*)delegate

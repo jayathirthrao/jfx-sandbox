@@ -34,6 +34,8 @@
 @interface GlassView3D : NSView <GlassView, NSTextInputClient>
 {
     GlassViewDelegate   *_delegate;
+    NSTrackingArea      *_trackingArea;
+    CALayer *_layer;
     GlassViewMTL3D *mtlView;
 
     GlassViewCGL3D *cglView;
@@ -59,5 +61,6 @@
 - (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties;
 - (void)setFrameOrigin:(NSPoint)newOrigin;
 - (NSView*)getView;
+- (CALayer*)getLayer;
 
 @end

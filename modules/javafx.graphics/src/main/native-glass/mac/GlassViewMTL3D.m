@@ -151,13 +151,6 @@
     if (self != nil)
     {
         [self _initialize3dWithJproperties:jproperties];
-
-        self->_delegate = [[GlassViewDelegate alloc] initWithView:self withJview:jView];
-
-        self->_trackingArea = [[NSTrackingArea alloc] initWithRect:frame
-                                                           options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect)
-                                                             owner:self userInfo:nil];
-        [self addTrackingArea: self->_trackingArea];
     }
     return self;
 }
@@ -165,12 +158,6 @@
 - (void)dealloc
 {
     [[self layer] release];
-    [self->_delegate release];
-    self->_delegate = nil;
-
-    [self removeTrackingArea: self->_trackingArea];
-    [self->_trackingArea release];
-    self->_trackingArea = nil;
 
     [super dealloc];
 }
@@ -181,29 +168,9 @@
     //[self->_delegate viewDidMoveToWindow];
 }
 
-- (void)setFrameOrigin:(NSPoint)newOrigin
+- (CALayer*)getLayer
 {
-    [super setFrameOrigin:newOrigin];
-}
-
-- (void)setFrameSize:(NSSize)newSize
-{
-    [super setFrameSize:newSize];
-}
-
-- (void)setFrame:(NSRect)frameRect
-{
-    [super setFrame:frameRect];
-}
-
-- (void)updateTrackingAreas
-{
-    [super updateTrackingAreas];
-}
-
-- (GlassViewDelegate*)getDelegate
-{
-    return self->_delegate;
+    return [self layer];
 }
 
 @end
