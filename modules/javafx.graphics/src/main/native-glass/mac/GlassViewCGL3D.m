@@ -191,7 +191,7 @@
         isSwPipe = YES;
     }
 
-    self->isHiDPIAware = NO;
+    BOOL isHiDPIAware = NO;
     if (jproperties != NULL)
     {
         jobject kHiDPIAwareKey = (*env)->NewObject(env, jIntegerClass, jIntegerInitMethod, com_sun_glass_ui_View_Capability_kHiDPIAwareKeyValue);
@@ -200,12 +200,12 @@
         GLASS_CHECK_EXCEPTION(env);
         if (kHiDPIAwareValue != NULL)
         {
-            self->isHiDPIAware = (*env)->CallBooleanMethod(env, kHiDPIAwareValue, jBooleanValueMethod) ? YES : NO;
+            isHiDPIAware = (*env)->CallBooleanMethod(env, kHiDPIAwareValue, jBooleanValueMethod) ? YES : NO;
             GLASS_CHECK_EXCEPTION(env);
         }
     }
 
-    GlassLayerCGL3D *layer = [[GlassLayerCGL3D alloc] initWithSharedContext:sharedCGL andClientContext:clientCGL withHiDPIAware:self->isHiDPIAware withIsSwPipe:isSwPipe];
+    GlassLayerCGL3D *layer = [[GlassLayerCGL3D alloc] initWithSharedContext:sharedCGL andClientContext:clientCGL withHiDPIAware:isHiDPIAware withIsSwPipe:isSwPipe];
     // https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/nsview_Class/Reference/NSView.html#//apple_ref/occ/instm/NSView/setWantsLayer:
     // the order of the following 2 calls is important: here we indicate we want a layer-hosting view
     {
@@ -254,11 +254,6 @@
     }
 
     //[self->_delegate viewDidMoveToWindow];
-}
-
-- (BOOL)isHiDPIAware
-{
-    return isHiDPIAware;
 }
 
 - (CALayer*)getLayer

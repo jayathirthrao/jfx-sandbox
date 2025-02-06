@@ -38,12 +38,9 @@
     CGFloat             _backgroundG;
     CGFloat             _backgroundB;
     CGFloat             _backgroundA;
-
-    BOOL isHiDPIAware;
 }
 
 - (CALayer*)getLayer;
 - (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties;
-- (BOOL)isHiDPIAware;
 
 @end

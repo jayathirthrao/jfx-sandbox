@@ -109,25 +109,36 @@
         }
     }
 
+    // TODO : We again fetch isHiDPIAware in GlassViewCGL3D
+    // Try to merge it
+    self->isHiDPIAware = NO;
+    if (jproperties != NULL)
+    {
+        jobject kHiDPIAwareKey = (*env)->NewObject(env, jIntegerClass, jIntegerInitMethod, com_sun_glass_ui_View_Capability_kHiDPIAwareKeyValue);
+        GLASS_CHECK_EXCEPTION(env);
+        jobject kHiDPIAwareValue = (*env)->CallObjectMethod(env, jproperties, jMapGetMethod, kHiDPIAwareKey);
+        GLASS_CHECK_EXCEPTION(env);
+        if (kHiDPIAwareValue != NULL)
+        {
+            self->isHiDPIAware = (*env)->CallBooleanMethod(env, kHiDPIAwareValue, jBooleanValueMethod) ? YES : NO;
+            GLASS_CHECK_EXCEPTION(env);
+        }
+    }
+
     self = [super initWithFrame:frame];
     if (self != nil) {
         if (mtlCommandQueuePtr != 0l) {
             self->isMtl = YES;
-            mtlView = [[GlassViewMTL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
-            self->_layer = [mtlView getLayer];
-            [mtlView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
-            [self addSubview:mtlView];
-            view = mtlView;
+            view = [[GlassViewMTL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
         } else {
             self->isMtl = NO;
             self->_drawCounter = 0;
             self->_texture = 0;
-            cglView = [[GlassViewCGL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
-            self->_layer = [cglView getLayer];
-            [cglView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
-            [self addSubview:cglView];
-            view = cglView;
+            view = [[GlassViewCGL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
         }
+        self->_layer = [view layer];
+        [view setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
+        [self addSubview:view];
         self->_delegate = [[GlassViewDelegate alloc] initWithView:self withJview:jView];
         self->_trackingArea = [[NSTrackingArea alloc] initWithRect:frame
                                                            options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect)
@@ -510,11 +521,11 @@
 {
     LOG("begin");
     if (self->isMtl) {
-        GlassLayerMTL3D *layer = (GlassLayerMTL3D*)[mtlView layer];
+        GlassLayerMTL3D *layer = (GlassLayerMTL3D*)[view layer];
 
         // TODO: MTL: implement isHiDPIAware similar to ES2 if needed, else remove it.
-        NSRect bounds = (/*self->isHiDPIAware &&*/ [mtlView respondsToSelector:@selector(convertRectToBacking:)]) ?
-            [mtlView convertRectToBacking:[mtlView bounds]] : [mtlView bounds];
+        NSRect bounds = (/*self->isHiDPIAware &&*/ [view respondsToSelector:@selector(convertRectToBacking:)]) ?
+            [view convertRectToBacking:[view bounds]] : [view bounds];
 
         [[layer getPainterOffscreen] bindForWidth:bounds.size.width andHeight:bounds.size.height];
 
@@ -525,9 +536,9 @@
 
         if (self->_drawCounter == 0)
         {
-            GlassLayerCGL3D *layer = (GlassLayerCGL3D*)[cglView layer];
-            NSRect bounds = ([cglView isHiDPIAware] && [cglView respondsToSelector:@selector(convertRectToBacking:)]) ?
-                [cglView convertRectToBacking:[cglView bounds]] : [cglView bounds];
+            GlassLayerCGL3D *layer = (GlassLayerCGL3D*)[view layer];
+            NSRect bounds = (self->isHiDPIAware && [view respondsToSelector:@selector(convertRectToBacking:)]) ?
+                [view convertRectToBacking:[view bounds]] : [view bounds];
             [[layer getPainterOffscreen] bindForWidth:(GLuint)bounds.size.width andHeight:(GLuint)bounds.size.height];
         }
         self->_drawCounter++;
@@ -537,7 +548,7 @@
 - (void)end
 {
     if (self->isMtl) {
-        GlassLayerMTL3D *layer = (GlassLayerMTL3D*)[mtlView layer];
+        GlassLayerMTL3D *layer = (GlassLayerMTL3D*)[view layer];
         [layer flush];
     } else {
         assert(self->_drawCounter > 0);
@@ -545,7 +556,7 @@
         self->_drawCounter--;
         if (self->_drawCounter == 0)
         {
-            GlassLayerCGL3D *layer = (GlassLayerCGL3D*)[cglView layer];
+            GlassLayerCGL3D *layer = (GlassLayerCGL3D*)[view layer];
             [[layer getPainterOffscreen] unbind];
             [layer flush];
         }
@@ -555,10 +566,10 @@
 - (void)pushPixels:(void*)pixels withWidth:(GLuint)width withHeight:(GLuint)height withScaleX:(GLfloat)scalex withScaleY:(GLfloat)scaley withEnv:(JNIEnv *)env
 {
     if (self->isMtl) {
-        GlassLayerMTL3D *layer = (GlassLayerMTL3D*)[mtlView layer];
+        GlassLayerMTL3D *layer = (GlassLayerMTL3D*)[view layer];
         [layer updateOffscreenTexture:pixels layerWidth: width layerHeight:height];
     } else {
-        GlassLayerCGL3D *layer = (GlassLayerCGL3D*)[cglView layer];
+        GlassLayerCGL3D *layer = (GlassLayerCGL3D*)[view layer];
         assert(self->_drawCounter > 0);
 
         if (self->_texture == 0)
@@ -667,10 +678,10 @@
 - (void)notifyScaleFactorChanged:(CGFloat)scale
 {
     if (self->isMtl) {
-        GlassLayerMTL3D *layer = (GlassLayerMTL3D*)[mtlView layer];
+        GlassLayerMTL3D *layer = (GlassLayerMTL3D*)[view layer];
         [layer notifyScaleFactorChanged:scale];
     } else {
-        GlassLayerCGL3D *layer = (GlassLayerCGL3D*)[cglView layer];
+        GlassLayerCGL3D *layer = (GlassLayerCGL3D*)[view layer];
         [layer notifyScaleFactorChanged:scale];
     }
 }

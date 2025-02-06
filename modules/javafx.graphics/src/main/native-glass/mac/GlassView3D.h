@@ -36,9 +36,6 @@
     GlassViewDelegate   *_delegate;
     NSTrackingArea      *_trackingArea;
     CALayer *_layer;
-    GlassViewMTL3D *mtlView;
-
-    GlassViewCGL3D *cglView;
 
     NSView *view;
 
@@ -53,6 +50,8 @@
     BOOL handlingKeyEvent;
     BOOL didCommitText;
     BOOL isMtl;
+
+    BOOL isHiDPIAware;
 
     NSEvent *lastKeyEvent;
 }
