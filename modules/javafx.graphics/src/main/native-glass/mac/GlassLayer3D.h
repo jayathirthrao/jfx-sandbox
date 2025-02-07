@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,19 +23,36 @@
  * questions.
  */
 
-#import <Cocoa/Cocoa.h>
-#import <Metal/Metal.h>
-
-#import "GlassView.h"
+#import "GlassLayerCGL3D.h"
+#import "GlassLayerMTL3D.h"
+#import "GlassCGLOffscreen.h"
 #import "GlassMTLOffscreen.h"
-#import "GlassLayer3D.h"
 
-@interface GlassViewMTL3D : NSView
+@interface GlassLayer3D : CALayer
 {
-    GlassLayer3D* layer;
+    GlassLayerCGL3D *cglLayer;
+    GlassLayerMTL3D *mtlLayer;
+
+    CALayer *layer;
+    BOOL isMTL;
 }
 
-- (GlassLayer3D*)getLayer;
-- (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties;
+- (id)initWithSharedContext:(CGLContextObj)ctx
+           andClientContext:(CGLContextObj)clCtx
+                mtlQueuePtr:(long)mtlCommandQueuePtr
+             withHiDPIAware:(BOOL)HiDPIAware
+               withIsSwPipe:(BOOL)isSwPipe;
+
+- (GlassCGLOffscreen*)getCGLPainterOffscreen;
+- (GlassMTLOffscreen*)getMTLPainterOffscreen;
+//- (GlassCGLOffscreen*)getGlassOffscreen;
+//- (void)hostOffscreen:(GlassCGLOffscreen*)offscreen;
+- (void)flush;
+- (void)setMTLDrawableSize:(CGSize)bounds;
+- (void) updateOffscreenTexture:(void*)pixels
+                     layerWidth:(int)width
+                     layerHeight:(int)height;
+
+- (void)notifyScaleFactorChanged:(CGFloat)scale;
 
 @end

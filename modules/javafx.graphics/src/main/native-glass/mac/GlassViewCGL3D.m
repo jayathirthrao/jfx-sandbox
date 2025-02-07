@@ -205,11 +205,13 @@
         }
     }
 
-    GlassLayerCGL3D *layer = [[GlassLayerCGL3D alloc] initWithSharedContext:sharedCGL andClientContext:clientCGL withHiDPIAware:isHiDPIAware withIsSwPipe:isSwPipe];
+    self->layer = [[GlassLayer3D alloc] initWithSharedContext:sharedCGL
+        andClientContext:clientCGL mtlQueuePtr:0l
+        withHiDPIAware:isHiDPIAware withIsSwPipe:isSwPipe];
     // https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/nsview_Class/Reference/NSView.html#//apple_ref/occ/instm/NSView/setWantsLayer:
     // the order of the following 2 calls is important: here we indicate we want a layer-hosting view
     {
-        [self setLayer:layer];
+        [self setLayer:self->layer];
         [self setWantsLayer:YES];
     }
 }
@@ -239,7 +241,7 @@
 
 - (void)dealloc
 {
-    [[self layer] release];
+    [self->layer release];
 
     [super dealloc];
 }
@@ -249,16 +251,15 @@
 {
     if ([self window] != nil)
     {
-        GlassLayerCGL3D *layer = (GlassLayerCGL3D*)[self layer];
-        [[layer getPainterOffscreen] setBackgroundColor:[[[self window] backgroundColor] colorUsingColorSpace:NSColorSpace.sRGBColorSpace]];
+        [[self->layer getCGLPainterOffscreen] setBackgroundColor:[[[self window] backgroundColor] colorUsingColorSpace:NSColorSpace.sRGBColorSpace]];
     }
 
     //[self->_delegate viewDidMoveToWindow];
 }
 
-- (CALayer*)getLayer
+- (GlassLayer3D*)getLayer
 {
-    return [self layer];
+    return self->layer;
 }
 
 @end

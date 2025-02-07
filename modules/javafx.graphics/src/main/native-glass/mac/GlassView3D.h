@@ -28,6 +28,7 @@
 #import "GlassView.h"
 #import "GlassViewMTL3D.h"
 #import "GlassViewCGL3D.h"
+#import "GlassLayer3D.h"
 //#import "GlassCGLOffscreen.h"
 
 // 3D version of Glass providing OpenGL context through CAOpenGLLayer
@@ -35,7 +36,7 @@
 {
     GlassViewDelegate   *_delegate;
     NSTrackingArea      *_trackingArea;
-    CALayer *_layer;
+    GlassLayer3D *layer;
 
     NSView *view;
 
@@ -61,5 +62,6 @@
 - (void)setFrameOrigin:(NSPoint)newOrigin;
 - (NSView*)getView;
 - (CALayer*)getLayer;
+//- (long)getFBO;
 
 @end

@@ -32,7 +32,6 @@
 #import "GlassKey.h"
 #import "GlassMacros.h"
 #import "GlassViewMTL3D.h"
-#import "GlassLayerMTL3D.h"
 #import "GlassApplication.h"
 #import "GlassScreen.h"
 
@@ -127,13 +126,15 @@
         isSwPipe = YES;
     }
 
-    GlassLayerMTL3D *layer = [[GlassLayerMTL3D alloc] init:mtlCommandQueuePtr withIsSwPipe:isSwPipe];
+    self->layer = [[GlassLayer3D alloc] initWithSharedContext:nil
+        andClientContext:nil mtlQueuePtr:mtlCommandQueuePtr
+        withHiDPIAware:YES withIsSwPipe:isSwPipe];
 
     // https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/nsview_Class/Reference/NSView.html#//apple_ref/occ/instm/NSView/setWantsLayer:
     // the order of the following 2 calls is important: here we indicate we want a layer-hosting view
     {
         [self setLayerContentsRedrawPolicy: NSViewLayerContentsRedrawOnSetNeedsDisplay];
-        [self setLayer:layer];
+        [self setLayer:self->layer];
         [self setWantsLayer:YES];
         //[self setWantsUpdateLayer:YES];
     }
@@ -157,7 +158,7 @@
 
 - (void)dealloc
 {
-    [[self layer] release];
+    [self->layer release];
 
     [super dealloc];
 }
@@ -168,9 +169,9 @@
     //[self->_delegate viewDidMoveToWindow];
 }
 
-- (CALayer*)getLayer
+- (GlassLayer3D*)getLayer
 {
-    return [self layer];
+    return self->layer;
 }
 
 @end

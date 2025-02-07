@@ -142,6 +142,11 @@ static NSArray *allModes = nil;
     }
 }
 
+- (void)setMTLDrawableSize:(CGSize)bounds
+{
+    [self setDrawableSize:bounds];
+}
+
 - (GlassMTLOffscreen*)getPainterOffscreen
 {
     return self->_painterOffscreen;

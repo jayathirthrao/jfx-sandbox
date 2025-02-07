@@ -29,10 +29,12 @@
 
 #import "GlassView.h"
 #import "GlassCGLOffscreen.h"
+#import "GlassLayer3D.h"
 
 // 3D version of Glass providing OpenGL context through CAOpenGLLayer
 @interface GlassViewCGL3D : NSOpenGLView
 {
+    GlassLayer3D* layer;
 
     CGFloat             _backgroundR;
     CGFloat             _backgroundG;
@@ -40,7 +42,7 @@
     CGFloat             _backgroundA;
 }
 
-- (CALayer*)getLayer;
+- (GlassLayer3D*)getLayer;
 - (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties;
 
 @end

@@ -43,6 +43,7 @@
                      layerHeight:(int)height;
 
 - (void) blitToScreen;
+- (void)setMTLDrawableSize:(CGSize)bounds;
 
 - (GlassMTLOffscreen*)getPainterOffscreen;
 - (void)flush;
