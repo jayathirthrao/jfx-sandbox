@@ -129,19 +129,17 @@
     if (self != nil) {
         if (mtlCommandQueuePtr != 0l) {
             self->isMtl = YES;
-            GlassViewMTL3D* mtlView;
-            view = mtlView = [[GlassViewMTL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
-            self->layer = [mtlView getLayer];
+            subView = [[GlassViewMTL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
+            self->layer = (GlassLayer3D*)[subView layer];
         } else {
             self->isMtl = NO;
             self->_drawCounter = 0;
             self->_texture = 0;
-            GlassViewCGL3D* cglView;
-            view = cglView = [[GlassViewCGL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
-            self->layer = [cglView getLayer];
+            subView = [[GlassViewCGL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
+            self->layer = (GlassLayer3D*)[subView layer];
         }
-        [view setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
-        [self addSubview:view];
+        [subView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
+        [self addSubview:subView];
         self->_delegate = [[GlassViewDelegate alloc] initWithView:self withJview:jView];
         self->_trackingArea = [[NSTrackingArea alloc] initWithRect:frame
                                                            options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect)
@@ -161,7 +159,7 @@
 {
     if (self->_texture != 0)
     {
-        [[self->layer getCGLPainterOffscreen] bindForWidth:(GLuint)[view bounds].size.width andHeight:(GLuint)[view bounds].size.height];
+        [[self->layer getCGLPainterOffscreen] bindForWidth:(GLuint)[subView bounds].size.width andHeight:(GLuint)[subView bounds].size.height];
         {
             glDeleteTextures(1, &self->_texture);
         }
@@ -227,7 +225,7 @@
 // also called when closing window, when [self window] == nil
 - (void)viewDidMoveToWindow
 {
-    [view viewDidMoveToWindow];
+    [subView viewDidMoveToWindow];
     [self->_delegate viewDidMoveToWindow];
 }
 
@@ -524,8 +522,8 @@
     LOG("begin");
     if (self->isMtl) {
         // TODO: MTL: implement isHiDPIAware similar to ES2 if needed, else remove it.
-        NSRect bounds = (/*self->isHiDPIAware &&*/ [view respondsToSelector:@selector(convertRectToBacking:)]) ?
-            [view convertRectToBacking:[view bounds]] : [view bounds];
+        NSRect bounds = (/*self->isHiDPIAware &&*/ [subView respondsToSelector:@selector(convertRectToBacking:)]) ?
+            [subView convertRectToBacking:[subView bounds]] : [subView bounds];
 
         [[self->layer getMTLPainterOffscreen] bindForWidth:bounds.size.width andHeight:bounds.size.height];
 
@@ -536,8 +534,8 @@
 
         if (self->_drawCounter == 0)
         {
-            NSRect bounds = (self->isHiDPIAware && [view respondsToSelector:@selector(convertRectToBacking:)]) ?
-                [view convertRectToBacking:[view bounds]] : [view bounds];
+            NSRect bounds = (self->isHiDPIAware && [subView respondsToSelector:@selector(convertRectToBacking:)]) ?
+                [subView convertRectToBacking:[subView bounds]] : [subView bounds];
             [[self->layer getCGLPainterOffscreen] bindForWidth:(GLuint)bounds.size.width andHeight:(GLuint)bounds.size.height];
         }
         self->_drawCounter++;
@@ -859,11 +857,6 @@
         value = [super accessibilityFocusedUIElement];
     }
     return value;
-}
-
-- (NSView*)getView
-{
-    return view;
 }
 
 - (GlassLayer3D*)getLayer

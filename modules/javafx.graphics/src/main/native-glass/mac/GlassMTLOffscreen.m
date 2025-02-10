@@ -149,11 +149,10 @@
     [self->_offscreen bindForWidth:width andHeight:height];
 }
 
-// - (void)unbind
-// {
-//     [self->_offscreen unbind];
-//     [self unsetContext];
-// }
+/*- (void)unbind
+{
+
+}*/
 
 - (void)blit
 {

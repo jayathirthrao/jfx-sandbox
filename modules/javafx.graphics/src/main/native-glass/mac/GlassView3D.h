@@ -38,7 +38,7 @@
     NSTrackingArea      *_trackingArea;
     GlassLayer3D *layer;
 
-    NSView *view;
+    NSView *subView;
 
     NSUInteger          _drawCounter; // draw counter, so that we only bind/unbind offscreen once
 
@@ -60,8 +60,6 @@
 - (GlassViewDelegate*)delegate;
 - (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties;
 - (void)setFrameOrigin:(NSPoint)newOrigin;
-- (NSView*)getView;
 - (CALayer*)getLayer;
-//- (long)getFBO;
 
 @end
