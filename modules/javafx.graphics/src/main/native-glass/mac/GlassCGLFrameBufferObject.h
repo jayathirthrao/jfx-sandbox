@@ -30,7 +30,7 @@
 
 #import "GlassCGLOffscreen.h"
 
-@interface GlassCGLFrameBufferObject : NSObject <GlassCGLOffscreenProtocol>
+@interface GlassCGLFrameBufferObject : NSObject
 {
     GLuint _width;
     GLuint _height;
@@ -45,5 +45,10 @@
 - (GLuint)texture;
 - (GLuint)fbo;
 - (void)setIsSwPipe:(BOOL)isSwPipe;
+- (GLuint)width;
+- (GLuint)height;
+- (void)bindForWidth:(GLuint)width andHeight:(GLuint)height;
+- (void)unbind;
+- (void)blitForWidth:(GLuint)width andHeight:(GLuint)height;
 
 @end

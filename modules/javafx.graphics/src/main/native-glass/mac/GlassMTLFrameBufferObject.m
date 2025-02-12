@@ -99,12 +99,12 @@
     [super dealloc];
 }
 
-- (GLuint)width
+- (unsigned int)width
 {
     return self->_width;
 }
 
-- (GLuint)height
+- (unsigned int)height
 {
     return self->_height;
 }
@@ -125,11 +125,6 @@
             [self _createFboIfNeededForWidth:width andHeight:height];
         }
     }
-}
-
-- (void)unbind
-{
-    //TODO: MTL:
 }
 
 - (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height

@@ -35,11 +35,6 @@
     #define LOG(MSG, ...) GLASS_LOG(MSG, ## __VA_ARGS__);
 #endif
 
-@interface GlassCGLOffscreen ()
-- (void)setContext;
-- (void)unsetContext;
-@end
-
 @implementation GlassCGLOffscreen
 
 - (id)initWithContext:(CGLContextObj)ctx
@@ -50,27 +45,22 @@
     {
         self->_ctx = CGLRetainContext(ctx);
 
-        self->_backgroundR = 1.0f;
-        self->_backgroundG = 1.0f;
-        self->_backgroundB = 1.0f;
-        self->_backgroundA = 1.0f;
-
         [self setContext];
         {
-            self->_offscreen = [[GlassCGLFrameBufferObject alloc] init];
-            if (self->_offscreen == nil)
+            self->_fbo = [[GlassCGLFrameBufferObject alloc] init];
+            if (self->_fbo == nil)
             {
                 // TODO: implement PBuffer if needed
-                //self->_offscreen = [[GlassPBuffer alloc] init];
+                //self->_fbo = [[GlassPBuffer alloc] init];
             }
-            [(GlassCGLFrameBufferObject*)self->_offscreen setIsSwPipe:(BOOL)isSwPipe];
+            [(GlassCGLFrameBufferObject*)self->_fbo setIsSwPipe:(BOOL)isSwPipe];
         }
         [self unsetContext];
     }
     return self;
 }
 
-- (CGLContextObj)getContext;
+- (CGLContextObj)getCtx;
 {
     return self->_ctx;
 }
@@ -79,8 +69,8 @@
 {
     [self setContext];
     {
-        [(NSObject*)self->_offscreen release];
-        self->_offscreen = NULL;
+        [(NSObject*)self->_fbo release];
+        self->_fbo = NULL;
     }
     [self unsetContext];
 
@@ -90,38 +80,19 @@
     [super dealloc];
 }
 
-- (void)setBackgroundColor:(NSColor*)color
+- (unsigned int)getWidth
 {
-    self->_backgroundR = (GLfloat)[color redComponent];
-    self->_backgroundG = (GLfloat)[color greenComponent];
-    self->_backgroundB = (GLfloat)[color blueComponent];
-    self->_backgroundA = (GLfloat)[color alphaComponent];
+    return [self->_fbo width];
 }
 
-- (GLuint)width
+- (unsigned int)getHeight
 {
-    return [self->_offscreen width];
+    return [self->_fbo height];
 }
 
-- (GLuint)height
+- (jlong)getFBO
 {
-    return [self->_offscreen height];
-}
-
-- (GLuint)fbo
-{
-    return [self->_offscreen fbo];
-}
-
-- (CAOpenGLLayer*)getLayer
-{
-    return _layer;
-}
-
-- (void)setLayer:(CAOpenGLLayer*)new_layer
-{
-    //Set a weak reference as layer owns offscreen
-    self->_layer = new_layer;
+    return [self->_fbo fbo];
 }
 
 - (void)setContext
@@ -140,23 +111,19 @@
 - (void)bindForWidth:(GLuint)width andHeight:(GLuint)height
 {
     [self setContext];
-    [self->_offscreen bindForWidth:width andHeight:height];
+    [self->_fbo bindForWidth:width andHeight:height];
 }
 
 - (void)unbind
 {
-    [self->_offscreen unbind];
+    [self->_fbo unbind];
     [self unsetContext];
 }
 
-- (void)blit
+- (id<MTLTexture>)getTexture
 {
-    [self blitForWidth:[self->_offscreen width] andHeight:[self->_offscreen height]];
-}
-
-- (GLuint)texture
-{
-    return [self->_offscreen texture];
+    //return [self->_fbo texture];
+    return nil;
 }
 
 - (void)blitForWidth:(GLuint)width andHeight:(GLuint)height
@@ -188,7 +155,7 @@
         }
         glClear(GL_COLOR_BUFFER_BIT);
 #endif
-        [self->_offscreen blitForWidth:width andHeight:height];
+        [self->_fbo blitForWidth:width andHeight:height];
 
         self->_dirty = GL_FALSE;
     }
@@ -199,11 +166,11 @@
     return self->_dirty;
 }
 
-- (void)blitFromOffscreen:(GlassCGLOffscreen*) other_offscreen
+- (void)blitFromOffscreen:(GlassOffscreen*)other_offscreen
 {
     [self setContext];
     {
-        [(GlassCGLFrameBufferObject*)self->_offscreen blitFromFBO:(GlassCGLFrameBufferObject*)other_offscreen->_offscreen];
+        [(GlassCGLFrameBufferObject*)self->_fbo blitFromFBO:(GlassCGLFrameBufferObject*)other_offscreen->offScreen->_fbo];
         self->_dirty = GL_TRUE;
     }
     [self unsetContext];

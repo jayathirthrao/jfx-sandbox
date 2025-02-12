@@ -26,7 +26,7 @@
 #import <Foundation/Foundation.h>
 #import "GlassMTLOffscreen.h"
 
-@interface GlassMTLFrameBufferObject : NSObject <GlassMTLOffscreenProtocol>
+@interface GlassMTLFrameBufferObject : NSObject
 {
     unsigned int _width;
     unsigned int _height;
@@ -38,6 +38,10 @@
 - (void)blitFromFBO:(GlassMTLFrameBufferObject*)other_fbo;
 - (id<MTLTexture>)texture;
 - (void)setIsSwPipe:(BOOL)isSwPipe;
+- (unsigned int)width;
+- (unsigned int)height;
+- (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
+- (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height;
 
 @end
 

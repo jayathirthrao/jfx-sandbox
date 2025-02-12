@@ -73,7 +73,7 @@ static NSArray *allModes = nil;
     } else {
         self->_blitCommandQueue = [self.device newCommandQueue];
     }
-    self->_painterOffscreen = [[GlassMTLOffscreen alloc] initWithContext:nil andIsSwPipe:isSwPipe];
+    self->_painterOffscreen = [[GlassOffscreen alloc] initWithContext:nil andIsSwPipe:isSwPipe];
     [self->_painterOffscreen setLayer:self];
 
     if (allModes == nil) {
@@ -147,22 +147,10 @@ static NSArray *allModes = nil;
     [self setDrawableSize:bounds];
 }
 
-- (GlassMTLOffscreen*)getPainterOffscreen
+- (GlassOffscreen*)getPainterOffscreen
 {
     return self->_painterOffscreen;
 }
-/*
-- (GlassMTLOffscreen*)getGlassOffscreen
-{
-    return self->_glassOffscreen;
-}
-
-- (void)hostOffscreen:(GlassOffscreen*)offscreen
-{
-    [self->_glassOffscreen release];
-    self->_glassOffscreen = [offscreen retain];
-    [self->_glassOffscreen setLayer:self];
-}*/
 
 
 - (void)display {

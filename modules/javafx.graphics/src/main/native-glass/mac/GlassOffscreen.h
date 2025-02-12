@@ -1,0 +1,110 @@
+/*
+ * Copyright (c) 2012, 2015, Oracle and/or its affiliates. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This code is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 only, as
+ * published by the Free Software Foundation.  Oracle designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Oracle in the LICENSE file that accompanied this code.
+ *
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * version 2 for more details (a copy is included in the LICENSE file that
+ * accompanied this code).
+ *
+ * You should have received a copy of the GNU General Public License version
+ * 2 along with this work; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
+ * or visit www.oracle.com if you need additional information or have any
+ * questions.
+ */
+
+#import <Cocoa/Cocoa.h>
+
+#import <OpenGL/gl.h>
+#import <OpenGL/OpenGL.h>
+#import <Metal/Metal.h>
+
+#import "GlassOffscreen.h"
+
+@protocol GlassOffscreenProtocol
+
+- (CGLContextObj)getCtx;
+- (jlong)getFBO;
+- (unsigned int)getWidth;
+- (unsigned int)getHeight;
+- (id<MTLTexture>)getTexture;
+- (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
+- (void)unbind;
+- (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height;
+
+- (unsigned char)isDirty;
+
+- (void)blitFromOffscreen:(GlassOffscreen*)other_offscreen;
+
+@end
+
+/*@interface GlassCGLOffscreen : NSObject <GlassCGLOffscreenProtocol>
+{
+    CGLContextObj               _ctx;
+    CGLContextObj               _ctxToRestore;
+
+    id<GlassCGLOffscreenProtocol>  _offscreen;
+
+    GLboolean                   _dirty;
+
+    GLfloat                     _backgroundR;
+    GLfloat                     _backgroundG;
+    GLfloat                     _backgroundB;
+    GLfloat                     _backgroundA;
+
+    CAOpenGLLayer*              _layer;
+}
+
+- (id)initWithContext:(CGLContextObj)ctx
+            andIsSwPipe:(BOOL)isSwPipe;
+- (CGLContextObj)getContext;
+
+- (void)setBackgroundColor:(NSColor*)color;
+
+- (void)blit;
+- (GLuint)texture;
+
+- (CAOpenGLLayer*)getLayer;
+- (void)setLayer:(CAOpenGLLayer*)new_layer;
+
+- (GLboolean)isDirty;
+
+- (void)blitFromOffscreen:(GlassCGLOffscreen*) other_offscreen;*/
+
+@interface GlassOffscreen : NSObject
+{
+    float                     _backgroundR;
+    float                     _backgroundG;
+    float                     _backgroundB;
+    float                     _backgroundA;
+    id<GlassOffscreenProtocol> offScreen;
+    CALayer*              _layer;
+}
+
+- (id)initWithContext:(CGLContextObj)ctx
+            andIsSwPipe:(BOOL)isSwPipe;
+- (void)setBackgroundColor:(NSColor*)color;
+- (CGLContextObj)getContext;
+- (long)fbo;
+//- (unsigned int)width;
+//- (unsigned int)height;
+- (id<MTLTexture>)texture;
+- (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
+- (void)unbind;
+- (void)blit;
+- (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height;
+- (unsigned char)isDirty;
+- (CALayer*)getLayer;
+- (void)setLayer:(CALayer*)new_layer;
+- (void)blitFromOffscreen:(GlassOffscreen*)other_offscreen;
+@end

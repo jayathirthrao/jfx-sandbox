@@ -26,12 +26,12 @@
 #import <OpenGL/gl.h>
 #import <OpenGL/OpenGL.h>
 
-#import "GlassCGLOffscreen.h"
+#import "GlassOffscreen.h"
 
 @interface GlassLayerCGL3D : CAOpenGLLayer
 {
-    GlassCGLOffscreen *_glassOffscreen;
-    GlassCGLOffscreen *_painterOffscreen;
+    GlassOffscreen *_glassOffscreen;
+    GlassOffscreen *_painterOffscreen;
 
     BOOL isHiDPIAware;
 }
@@ -41,9 +41,9 @@
              withHiDPIAware:(BOOL)HiDPIAware
              withIsSwPipe:(BOOL)isSwPipe;
 
-- (GlassCGLOffscreen*)getPainterOffscreen;
-- (GlassCGLOffscreen*)getGlassOffscreen;
-- (void)hostOffscreen:(GlassCGLOffscreen*)offscreen;
+- (GlassOffscreen*)getPainterOffscreen;
+- (GlassOffscreen*)getGlassOffscreen;
+- (void)hostOffscreen:(GlassOffscreen*)offscreen;
 - (void)flush;
 
 - (void)notifyScaleFactorChanged:(CGFloat)scale;

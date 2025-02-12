@@ -330,9 +330,9 @@
     return self->_texture;
 }
 
-- (GLuint)fbo
+- (jlong)fbo
 {
-    return self->_fbo;
+    return (jlong)self->_fbo;
 }
 
 - (void)setIsSwPipe:(BOOL)isSwPipe

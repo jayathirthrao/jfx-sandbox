@@ -26,9 +26,14 @@
 #import "common.h"
 #import <Cocoa/Cocoa.h>
 #import <Metal/Metal.h>
+#import <OpenGL/gl.h>
+#import <OpenGL/OpenGL.h>
 #import <QuartzCore/CAMetalLayer.h>
 
-@protocol GlassMTLOffscreenProtocol
+#import "GlassOffscreen.h"
+#import "GlassMTLFrameBufferObject.h"
+
+/*@protocol GlassMTLOffscreenProtocol
 
 // as destination (to draw into)
 - (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
@@ -41,36 +46,26 @@
 - (unsigned int)width;
 - (unsigned int)height;
 
-@end
+@end*/
 
-@interface GlassMTLOffscreen : NSObject <GlassMTLOffscreenProtocol>
+@interface GlassMTLOffscreen : NSObject <GlassOffscreenProtocol>
 {
-   id<GlassMTLOffscreenProtocol>  _offscreen;
-
-    bool                      _dirty;
-
-    float                     _backgroundR;
-    float                     _backgroundG;
-    float                     _backgroundB;
-    float                     _backgroundA;
-
-    CAMetalLayer*              _layer;
+    GlassMTLFrameBufferObject*  _fbo;
 }
 
-- (id)initWithContext:(id<MTLDevice>) device
+- (id)initWithContext:(NSObject*)ctx
             andIsSwPipe:(BOOL)isSwPipe;
+/*- (CGLContextObj)getCtx;
+- (jlong)getFBO;
+- (unsigned int)getWidth;
+- (unsigned int)getHeight;
+- (id<MTLTexture>)getTexture;
+- (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
+- (void)unbind;
+- (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height;
 
-- (void)setBackgroundColor:(NSColor*)color;
+- (unsigned char)isDirty;
 
-- (void)blit;
-- (id<MTLTexture>)texture;
-
-- (CAMetalLayer*)getLayer;
-- (void)setLayer:(CAMetalLayer*)new_layer;
-
-- (bool)isDirty;
-- (jlong)fbo;
-
-- (void)blitFromOffscreen:(GlassMTLOffscreen*) other_offscreen;
+- (void)blitFromOffscreen:(GlassOffscreen*)other_offscreen;*/
 
 @end

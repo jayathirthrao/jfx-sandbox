@@ -25,11 +25,11 @@
 
 #import <Metal/Metal.h>
 #import <QuartzCore/CAMetalLayer.h>
-#import "GlassMTLOffscreen.h"
+#import "GlassOffscreen.h"
 
 @interface GlassLayerMTL3D : CAMetalLayer
 {
-    GlassMTLOffscreen *_painterOffscreen;
+    GlassOffscreen *_painterOffscreen;
 
     BOOL isHiDPIAware;
     id<MTLCommandQueue> _blitCommandQueue;
@@ -45,7 +45,7 @@
 - (void) blitToScreen;
 - (void)setMTLDrawableSize:(CGSize)bounds;
 
-- (GlassMTLOffscreen*)getPainterOffscreen;
+- (GlassOffscreen*)getPainterOffscreen;
 - (void)flush;
 - (void)display;
 
