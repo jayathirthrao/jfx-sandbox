@@ -38,49 +38,26 @@
 
 @implementation GlassOffscreen
 
-- (id)initWithContext:(CGLContextObj)ctx
-            andIsSwPipe:(BOOL)isSwPipe;
+- (id)init
 {
     self = [super init];
     if (self != nil)
     {
-        //self->_ctx = CGLRetainContext(ctx);
-
         self->_backgroundR = 1.0f;
         self->_backgroundG = 1.0f;
         self->_backgroundB = 1.0f;
         self->_backgroundA = 1.0f;
-
-        if (ctx == nil) { // MTL
-            self->offScreen = [[GlassMTLOffscreen alloc] initWithContext:nil andIsSwPipe:isSwPipe];
-        } else {
-            self->offScreen = [[GlassCGLOffscreen alloc] initWithContext:ctx andIsSwPipe:isSwPipe];
-        }
-        /*[self setContext];
-        {
-            self->_offscreen = [[GlassCGLFrameBufferObject alloc] init];
-            if (self->_offscreen == nil)
-            {
-                // TODO: implement PBuffer if needed
-                //self->_offscreen = [[GlassPBuffer alloc] init];
-            }
-            [(GlassCGLFrameBufferObject*)self->_offscreen setIsSwPipe:(BOOL)isSwPipe];
-        }
-        [self unsetContext];*/
-
     }
     return self;
 }
 
 - (CGLContextObj)getContext
 {
-    return [self->offScreen getCtx];
+    return nil;
 }
 
 - (void)dealloc
 {
-    [(NSObject*)self->offScreen release];
-    self->offScreen = NULL;
     [super dealloc];
 }
 
@@ -92,54 +69,49 @@
     self->_backgroundA = (float)[color alphaComponent];
 }
 
-/*- (long)width
+- (unsigned int)width
 {
-    return [self->offScreen width];
+    return 0;
 }
 
-- (long)height
+- (unsigned int)height
 {
-    return [self->offScreen height];
-}*/
+    return 0;
+}
 
 - (jlong)fbo
 {
-    return (jlong)[self->offScreen getFBO];
+    return 0;
 }
 
 - (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height
 {
-    [self->offScreen bindForWidth:width andHeight:height];
 }
 
 - (void)unbind
 {
-    [self->offScreen unbind];
 }
 
 - (void)blit
 {
-    [self blitForWidth:[self->offScreen getWidth] andHeight:[self->offScreen getHeight]];
 }
 
 - (id<MTLTexture>)texture
 {
-    return [self->offScreen getTexture];
+    return nil;
 }
 
 - (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height
 {
-    [self->offScreen blitForWidth:width andHeight:height];
 }
 
 - (unsigned char)isDirty
 {
-    return [self->offScreen isDirty];
+    return 0;
 }
 
 - (void)blitFromOffscreen:(GlassOffscreen*)other_offscreen
 {
-    [self->offScreen blitFromOffscreen:other_offscreen];
 }
 
 - (CALayer*)getLayer

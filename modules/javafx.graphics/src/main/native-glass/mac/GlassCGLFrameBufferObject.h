@@ -28,8 +28,6 @@
 #import <OpenGL/gl.h>
 #import <OpenGL/OpenGL.h>
 
-#import "GlassCGLOffscreen.h"
-
 @interface GlassCGLFrameBufferObject : NSObject
 {
     GLuint _width;

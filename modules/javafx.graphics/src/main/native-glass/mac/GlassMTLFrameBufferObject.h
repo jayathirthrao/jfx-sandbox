@@ -24,7 +24,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "GlassMTLOffscreen.h"
+#import <Metal/Metal.h>
 
 @interface GlassMTLFrameBufferObject : NSObject
 {

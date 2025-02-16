@@ -26,6 +26,7 @@
 #import <Metal/Metal.h>
 #import <QuartzCore/CAMetalLayer.h>
 #import "GlassOffscreen.h"
+#import "GlassMTLOffscreen.h"
 
 @interface GlassLayerMTL3D : CAMetalLayer
 {

@@ -125,14 +125,13 @@ static NSArray *allModes = nil;
 }
 
 // TODO: Again we need common OffScreen
-- (GlassMTLOffscreen*)getMTLPainterOffscreen
+- (GlassOffscreen*)getPainterOffscreen
 {
-    return [mtlLayer getPainterOffscreen];
-}
-
-- (GlassCGLOffscreen*)getCGLPainterOffscreen
-{
-    return [cglLayer getPainterOffscreen];
+    if (self->isMTL) {
+        return [mtlLayer getPainterOffscreen];
+    } else {
+        return [cglLayer getPainterOffscreen];
+    }
 }
 
 - (void)setMTLDrawableSize:(CGSize)bounds

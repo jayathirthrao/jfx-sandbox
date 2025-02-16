@@ -251,7 +251,7 @@
 {
     if ([self window] != nil)
     {
-        [[self->layer getCGLPainterOffscreen] setBackgroundColor:[[[self window] backgroundColor] colorUsingColorSpace:NSColorSpace.sRGBColorSpace]];
+        [[self->layer getPainterOffscreen] setBackgroundColor:[[[self window] backgroundColor] colorUsingColorSpace:NSColorSpace.sRGBColorSpace]];
     }
 
     //[self->_delegate viewDidMoveToWindow];

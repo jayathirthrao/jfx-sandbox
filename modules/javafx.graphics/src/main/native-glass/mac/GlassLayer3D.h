@@ -43,8 +43,7 @@
              withHiDPIAware:(BOOL)HiDPIAware
                withIsSwPipe:(BOOL)isSwPipe;
 
-- (GlassCGLOffscreen*)getCGLPainterOffscreen;
-- (GlassMTLOffscreen*)getMTLPainterOffscreen;
+- (GlassOffscreen*)getPainterOffscreen;
 //- (GlassCGLOffscreen*)getGlassOffscreen;
 //- (void)hostOffscreen:(GlassCGLOffscreen*)offscreen;
 - (void)flush;

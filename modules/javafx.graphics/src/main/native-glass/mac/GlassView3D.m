@@ -129,14 +129,16 @@
     if (self != nil) {
         if (mtlCommandQueuePtr != 0l) {
             self->isMtl = YES;
-            subView = [[GlassViewMTL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
-            self->layer = (GlassLayer3D*)[subView layer];
+            GlassViewMTL3D* mtlSubView;
+            subView = mtlSubView = [[GlassViewMTL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
+            self->layer = [mtlSubView getLayer];
         } else {
             self->isMtl = NO;
             self->_drawCounter = 0;
             self->_texture = 0;
-            subView = [[GlassViewCGL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
-            self->layer = (GlassLayer3D*)[subView layer];
+            GlassViewCGL3D* cglSubView;
+            subView = cglSubView = [[GlassViewCGL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
+            self->layer = [cglSubView getLayer];
         }
         [subView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
         [self addSubview:subView];
@@ -159,11 +161,11 @@
 {
     if (self->_texture != 0)
     {
-        [[self->layer getCGLPainterOffscreen] bindForWidth:(GLuint)[subView bounds].size.width andHeight:(GLuint)[subView bounds].size.height];
+        [[self->layer getPainterOffscreen] bindForWidth:(GLuint)[subView bounds].size.width andHeight:(GLuint)[subView bounds].size.height];
         {
             glDeleteTextures(1, &self->_texture);
         }
-        [[layer getCGLPainterOffscreen] unbind];
+        [[self->layer getPainterOffscreen] unbind];
     }
     [self removeTrackingArea: self->_trackingArea];
     [self->_trackingArea release];
@@ -525,7 +527,7 @@
         NSRect bounds = (/*self->isHiDPIAware &&*/ [subView respondsToSelector:@selector(convertRectToBacking:)]) ?
             [subView convertRectToBacking:[subView bounds]] : [subView bounds];
 
-        [[self->layer getMTLPainterOffscreen] bindForWidth:bounds.size.width andHeight:bounds.size.height];
+        [[self->layer getPainterOffscreen] bindForWidth:bounds.size.width andHeight:bounds.size.height];
 
         CGSize s = {bounds.size.width, bounds.size.height};
         [self->layer setMTLDrawableSize:s];
@@ -536,7 +538,7 @@
         {
             NSRect bounds = (self->isHiDPIAware && [subView respondsToSelector:@selector(convertRectToBacking:)]) ?
                 [subView convertRectToBacking:[subView bounds]] : [subView bounds];
-            [[self->layer getCGLPainterOffscreen] bindForWidth:(GLuint)bounds.size.width andHeight:(GLuint)bounds.size.height];
+            [[self->layer getPainterOffscreen] bindForWidth:(GLuint)bounds.size.width andHeight:(GLuint)bounds.size.height];
         }
         self->_drawCounter++;
     }
@@ -552,7 +554,7 @@
         self->_drawCounter--;
         if (self->_drawCounter == 0)
         {
-            [[self->layer getCGLPainterOffscreen] unbind];
+            [[self->layer getPainterOffscreen] unbind];
             [self->layer flush];
         }
     }

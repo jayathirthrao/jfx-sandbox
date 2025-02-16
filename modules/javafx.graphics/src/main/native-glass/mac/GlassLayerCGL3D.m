@@ -48,8 +48,8 @@ static NSArray *allModes = nil;
     self = [super init];
     if (self != nil)
     {
-        self->_painterOffscreen = [[GlassOffscreen alloc] initWithContext:clCtx andIsSwPipe:isSwPipe];
-        self->_glassOffscreen = [[GlassOffscreen alloc] initWithContext:ctx andIsSwPipe:isSwPipe];
+        self->_painterOffscreen = (GlassOffscreen*)[[GlassCGLOffscreen alloc] initWithContext:clCtx andIsSwPipe:isSwPipe];
+        self->_glassOffscreen = (GlassOffscreen*)[[GlassCGLOffscreen alloc] initWithContext:ctx andIsSwPipe:isSwPipe];
         [self->_glassOffscreen setLayer:self];
         LOG("   GlassLayerCGL3D context: %p", ctx);
 
@@ -159,7 +159,7 @@ static NSArray *allModes = nil;
 
 - (void)flush
 {
-    [(GlassOffscreen*)_glassOffscreen blitFromOffscreen:(GlassOffscreen*)_painterOffscreen];
+    [(GlassCGLOffscreen*)_glassOffscreen blitFromOffscreen:(GlassCGLOffscreen*)_painterOffscreen];
     if ([NSThread isMainThread]) {
         [[self->_glassOffscreen getLayer] setNeedsDisplay];
     } else {

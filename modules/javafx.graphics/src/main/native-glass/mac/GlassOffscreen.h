@@ -31,80 +31,27 @@
 
 #import "GlassOffscreen.h"
 
-@protocol GlassOffscreenProtocol
-
-- (CGLContextObj)getCtx;
-- (jlong)getFBO;
-- (unsigned int)getWidth;
-- (unsigned int)getHeight;
-- (id<MTLTexture>)getTexture;
-- (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
-- (void)unbind;
-- (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height;
-
-- (unsigned char)isDirty;
-
-- (void)blitFromOffscreen:(GlassOffscreen*)other_offscreen;
-
-@end
-
-/*@interface GlassCGLOffscreen : NSObject <GlassCGLOffscreenProtocol>
-{
-    CGLContextObj               _ctx;
-    CGLContextObj               _ctxToRestore;
-
-    id<GlassCGLOffscreenProtocol>  _offscreen;
-
-    GLboolean                   _dirty;
-
-    GLfloat                     _backgroundR;
-    GLfloat                     _backgroundG;
-    GLfloat                     _backgroundB;
-    GLfloat                     _backgroundA;
-
-    CAOpenGLLayer*              _layer;
-}
-
-- (id)initWithContext:(CGLContextObj)ctx
-            andIsSwPipe:(BOOL)isSwPipe;
-- (CGLContextObj)getContext;
-
-- (void)setBackgroundColor:(NSColor*)color;
-
-- (void)blit;
-- (GLuint)texture;
-
-- (CAOpenGLLayer*)getLayer;
-- (void)setLayer:(CAOpenGLLayer*)new_layer;
-
-- (GLboolean)isDirty;
-
-- (void)blitFromOffscreen:(GlassCGLOffscreen*) other_offscreen;*/
-
 @interface GlassOffscreen : NSObject
 {
     float                     _backgroundR;
     float                     _backgroundG;
     float                     _backgroundB;
     float                     _backgroundA;
-    id<GlassOffscreenProtocol> offScreen;
     CALayer*              _layer;
 }
 
-- (id)initWithContext:(CGLContextObj)ctx
-            andIsSwPipe:(BOOL)isSwPipe;
 - (void)setBackgroundColor:(NSColor*)color;
 - (CGLContextObj)getContext;
 - (long)fbo;
-//- (unsigned int)width;
-//- (unsigned int)height;
+- (unsigned int)width;
+- (unsigned int)height;
 - (id<MTLTexture>)texture;
 - (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
 - (void)unbind;
 - (void)blit;
 - (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height;
 - (unsigned char)isDirty;
+- (void)blitFromOffscreen:(GlassOffscreen*)other_offscreen;
 - (CALayer*)getLayer;
 - (void)setLayer:(CALayer*)new_layer;
-- (void)blitFromOffscreen:(GlassOffscreen*)other_offscreen;
 @end

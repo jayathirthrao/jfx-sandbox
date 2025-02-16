@@ -344,7 +344,7 @@ JNIEXPORT jlong JNICALL Java_com_sun_glass_ui_mac_MacView__1getNativeFrameBuffer
         GlassView3D<GlassView> *view = getGlassView(env, jPtr);
         GlassLayer3D *layer = (GlassLayer3D*)[view getLayer];
         // TODO : Get common offscreen surface
-        fb = (jlong) [[layer getMTLPainterOffscreen] fbo];
+        fb = (jlong) [[layer getPainterOffscreen] fbo];
     }
     GLASS_POOL_EXIT;
     GLASS_CHECK_EXCEPTION(env);

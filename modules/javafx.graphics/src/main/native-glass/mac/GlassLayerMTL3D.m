@@ -73,7 +73,7 @@ static NSArray *allModes = nil;
     } else {
         self->_blitCommandQueue = [self.device newCommandQueue];
     }
-    self->_painterOffscreen = [[GlassOffscreen alloc] initWithContext:nil andIsSwPipe:isSwPipe];
+    self->_painterOffscreen = (GlassOffscreen*)[[GlassMTLOffscreen alloc] initWithContext:nil andIsSwPipe:isSwPipe];
     [self->_painterOffscreen setLayer:self];
 
     if (allModes == nil) {

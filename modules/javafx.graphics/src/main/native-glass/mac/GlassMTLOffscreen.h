@@ -33,39 +33,23 @@
 #import "GlassOffscreen.h"
 #import "GlassMTLFrameBufferObject.h"
 
-/*@protocol GlassMTLOffscreenProtocol
-
-// as destination (to draw into)
-- (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
-//- (void)unbind;
-
-// as source (to show)
-- (id<MTLTexture>) texture;
-- (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height;
-
-- (unsigned int)width;
-- (unsigned int)height;
-
-@end*/
-
-@interface GlassMTLOffscreen : NSObject <GlassOffscreenProtocol>
+@interface GlassMTLOffscreen : GlassOffscreen
 {
     GlassMTLFrameBufferObject*  _fbo;
 }
 
 - (id)initWithContext:(NSObject*)ctx
             andIsSwPipe:(BOOL)isSwPipe;
-/*- (CGLContextObj)getCtx;
-- (jlong)getFBO;
-- (unsigned int)getWidth;
-- (unsigned int)getHeight;
-- (id<MTLTexture>)getTexture;
+- (jlong)fbo;
+- (unsigned int)width;
+- (unsigned int)height;
+- (id<MTLTexture>)texture;
 - (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
 - (void)unbind;
 - (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height;
 
 - (unsigned char)isDirty;
 
-- (void)blitFromOffscreen:(GlassOffscreen*)other_offscreen;*/
+- (void)blitFromOffscreen:(GlassMTLOffscreen*)other_offscreen;
 
 @end

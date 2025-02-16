@@ -60,7 +60,7 @@
     return self;
 }
 
-- (CGLContextObj)getCtx;
+- (CGLContextObj)getContext;
 {
     return self->_ctx;
 }
@@ -80,19 +80,19 @@
     [super dealloc];
 }
 
-- (unsigned int)getWidth
+- (unsigned int)width
 {
     return [self->_fbo width];
 }
 
-- (unsigned int)getHeight
+- (unsigned int)height
 {
     return [self->_fbo height];
 }
 
-- (jlong)getFBO
+- (jlong)fbo
 {
-    return [self->_fbo fbo];
+    return (jlong)[self->_fbo fbo];
 }
 
 - (void)setContext
@@ -120,10 +120,9 @@
     [self unsetContext];
 }
 
-- (id<MTLTexture>)getTexture
+- (GLuint)texture
 {
-    //return [self->_fbo texture];
-    return nil;
+    return [self->_fbo texture];
 }
 
 - (void)blitForWidth:(GLuint)width andHeight:(GLuint)height
@@ -166,11 +165,11 @@
     return self->_dirty;
 }
 
-- (void)blitFromOffscreen:(GlassOffscreen*)other_offscreen
+- (void)blitFromOffscreen:(GlassCGLOffscreen*)other_offscreen
 {
     [self setContext];
     {
-        [(GlassCGLFrameBufferObject*)self->_fbo blitFromFBO:(GlassCGLFrameBufferObject*)other_offscreen->offScreen->_fbo];
+        [(GlassCGLFrameBufferObject*)self->_fbo blitFromFBO:(GlassCGLFrameBufferObject*)other_offscreen->_fbo];
         self->_dirty = GL_TRUE;
     }
     [self unsetContext];

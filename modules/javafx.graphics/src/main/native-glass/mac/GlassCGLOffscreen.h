@@ -24,29 +24,14 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import "common.h"
 
 #import <OpenGL/gl.h>
 #import <OpenGL/OpenGL.h>
 #import "GlassOffscreen.h"
 #import "GlassCGLFrameBufferObject.h"
 
-/*@protocol GlassCGLOffscreenProtocol
-
-// as destination (to draw into)
-- (void)bindForWidth:(GLuint)width andHeight:(GLuint)height;
-- (void)unbind;
-
-// as source (to show)
-- (GLuint)texture;
-- (void)blitForWidth:(GLuint)width andHeight:(GLuint)height;
-
-- (GLuint)width;
-- (GLuint)height;
-- (GLuint)fbo;
-
-@end*/
-
-@interface GlassCGLOffscreen : NSObject <GlassOffscreenProtocol>
+@interface GlassCGLOffscreen : GlassOffscreen
 {
     CGLContextObj               _ctx;
     CGLContextObj               _ctxToRestore;
@@ -54,27 +39,21 @@
     GlassCGLFrameBufferObject*  _fbo;
 
     GLboolean                   _dirty;
-
-    /*GLfloat                     _backgroundR;
-    GLfloat                     _backgroundG;
-    GLfloat                     _backgroundB;
-    GLfloat                     _backgroundA;*/
 }
 
 - (id)initWithContext:(CGLContextObj)ctx
             andIsSwPipe:(BOOL)isSwPipe;
-/*- (CGLContextObj)getCtx;
-- (long)getFBO;
-- (unsigned int)getWidth;
-- (unsigned int)getHeight;
-// TODO: MTL: remove MTL declaration
-- (id<MTLTexture>)getTexture;
+- (CGLContextObj)getContext;
+- (long)fbo;
+- (unsigned int)width;
+- (unsigned int)height;
+- (GLuint)texture;
 - (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
 - (void)unbind;
 - (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height;
 
 - (GLboolean)isDirty;
 
-- (void)blitFromOffscreen:(GlassOffscreen*)other_offscreen;*/
+- (void)blitFromOffscreen:(GlassCGLOffscreen*)other_offscreen;
 
 @end

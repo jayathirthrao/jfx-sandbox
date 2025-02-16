@@ -27,6 +27,7 @@
 #import <OpenGL/OpenGL.h>
 
 #import "GlassOffscreen.h"
+#import "GlassCGLOffscreen.h"
 
 @interface GlassLayerCGL3D : CAOpenGLLayer
 {

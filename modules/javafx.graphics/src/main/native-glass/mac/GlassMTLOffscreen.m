@@ -37,11 +37,6 @@
     #define LOG(MSG, ...) GLASS_LOG(MSG, ## __VA_ARGS__);
 #endif
 
-// @interface GlassOffscreen ()
-// - (void)setContext;
-// - (void)unsetContext;
-// @end
-
 @implementation GlassMTLOffscreen
 
 - (id)initWithContext:(NSObject*)device
@@ -63,11 +58,6 @@
     return self;
 }
 
-- (CGLContextObj)getCtx;
-{
-    return nil;
-}
-
 - (void)dealloc
 {
     {
@@ -78,12 +68,12 @@
     [super dealloc];
 }
 
-- (unsigned int)getWidth
+- (unsigned int)width
 {
     return [self->_fbo width];
 }
 
-- (unsigned int)getHeight
+- (unsigned int)height
 {
     return [self->_fbo height];
 }
@@ -92,7 +82,7 @@
     //no-op in case of MTL
 }
 
-- (jlong)getFBO
+- (jlong)fbo
 {
     //NSLog(@"Glass fbo = %@", [self->_fbo texture]);
     return ptr_to_jlong((void *)[self->_fbo texture]);
@@ -106,7 +96,7 @@
     [self->_fbo bindForWidth:width andHeight:height];
 }
 
-- (id<MTLTexture>)getTexture
+- (id<MTLTexture>)texture
 {
     return [self->_fbo texture];
 }
@@ -125,10 +115,10 @@
 }
 
 // TODO: MTL: This just creates another texture and doesn't do any blit
-- (void)blitFromOffscreen:(GlassOffscreen*) other_offscreen
+- (void)blitFromOffscreen:(GlassMTLOffscreen*) other_offscreen
 {
     {
-        [(GlassMTLFrameBufferObject*)self->_fbo blitFromFBO:(GlassMTLFrameBufferObject*)other_offscreen->offScreen->_fbo];
+        [(GlassMTLFrameBufferObject*)self->_fbo blitFromFBO:(GlassMTLFrameBufferObject*)other_offscreen->_fbo];
     }
 }
 
