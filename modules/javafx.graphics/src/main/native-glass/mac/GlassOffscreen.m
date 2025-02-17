@@ -92,6 +92,19 @@
 {
 }
 
+- (void)flush:(GlassOffscreen*)glassOffScreen
+{
+}
+
+- (void)pushPixels:(void*)pixels
+         withWidth:(unsigned int)width
+         withHeight:(unsigned int)height
+         withScaleX:(float)scalex
+         withScaleY:(float)scaley
+         ofView:(NSView*)view
+{
+}
+
 - (void)blit
 {
 }

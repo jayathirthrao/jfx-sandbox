@@ -38,18 +38,11 @@
 
 - (id) init:(long)mtlCommandQueuePtr
        withIsSwPipe:(BOOL)isSwPipe;
-- (void)notifyScaleFactorChanged:(CGFloat)scale;
-- (void) updateOffscreenTexture:(void*)pixels
-                     layerWidth:(int)width
-                     layerHeight:(int)height;
 
 - (void) blitToScreen;
-- (void)setMTLDrawableSize:(CGSize)bounds;
 
 - (GlassOffscreen*)getPainterOffscreen;
-- (void)flush;
 - (void)display;
-
 @end
 
 

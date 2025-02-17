@@ -616,7 +616,7 @@ JNIEXPORT void JNICALL Java_com_sun_glass_ui_mac_MacView__1uploadPixelsDirect
     // must be in the middle of begin/end
     if ((jWidth > 0) && (jHeight > 0))
     {
-        [view pushPixels:pixels withWidth:(GLuint)jWidth withHeight:(GLuint)jHeight withScaleX:(GLfloat)jScaleX withScaleY:(GLfloat)jScaleY withEnv:env];
+        [view pushPixels:pixels withWidth:(unsigned int)jWidth withHeight:(unsigned int)jHeight withScaleX:(float)jScaleX withScaleY:(float)jScaleY withEnv:env];
     }
 }
 
@@ -654,7 +654,7 @@ JNIEXPORT void JNICALL Java_com_sun_glass_ui_mac_MacView__1uploadPixelsByteArray
         void *pixels = (data+jOffset);
 
         // must be in the middle of begin/end
-        [view pushPixels:pixels withWidth:(GLuint)jWidth withHeight:(GLuint)jHeight withScaleX:(GLfloat)jScaleX withScaleY:(GLfloat)jScaleY withEnv:env];
+        [view pushPixels:pixels withWidth:(unsigned int)jWidth withHeight:(unsigned int)jHeight withScaleX:(float)jScaleX withScaleY:(float)jScaleY withEnv:env];
     }
     (*env)->ReleasePrimitiveArrayCritical(env, jArray, data, JNI_ABORT);
 }
@@ -693,7 +693,7 @@ JNIEXPORT void JNICALL Java_com_sun_glass_ui_mac_MacView__1uploadPixelsIntArray
         void *pixels = (data+jOffset);
 
         // must be in the middle of begin/end
-        [view pushPixels:pixels withWidth:(GLuint)jWidth withHeight:(GLuint)jHeight withScaleX:(GLfloat)jScaleX withScaleY:(GLfloat)jScaleY withEnv:env];
+        [view pushPixels:pixels withWidth:(unsigned int)jWidth withHeight:(unsigned int)jHeight withScaleX:(float)jScaleX withScaleY:(float)jScaleY withEnv:env];
     }
     (*env)->ReleasePrimitiveArrayCritical(env, jArray, data, JNI_ABORT);
 }

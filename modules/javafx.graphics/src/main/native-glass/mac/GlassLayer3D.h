@@ -30,11 +30,9 @@
 
 @interface GlassLayer3D : CALayer
 {
-    GlassLayerCGL3D *cglLayer;
-    GlassLayerMTL3D *mtlLayer;
-
-    CALayer *layer;
-    BOOL isMTL;
+    GlassOffscreen *painterOffScreen;
+    GlassOffscreen *glassOffScreen;
+    BOOL isHiDPIAware;
 }
 
 - (id)initWithSharedContext:(CGLContextObj)ctx
@@ -46,11 +44,14 @@
 - (GlassOffscreen*)getPainterOffscreen;
 //- (GlassCGLOffscreen*)getGlassOffscreen;
 //- (void)hostOffscreen:(GlassCGLOffscreen*)offscreen;
-- (void)flush;
-- (void)setMTLDrawableSize:(CGSize)bounds;
-- (void) updateOffscreenTexture:(void*)pixels
-                     layerWidth:(int)width
-                     layerHeight:(int)height;
+- (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
+- (void)end;
+- (void)pushPixels:(void*)pixels
+         withWidth:(unsigned int)width
+         withHeight:(unsigned int)height
+         withScaleX:(float)scalex
+         withScaleY:(float)scaley
+         ofView:(NSView*)view;
 
 - (void)notifyScaleFactorChanged:(CGFloat)scale;
 

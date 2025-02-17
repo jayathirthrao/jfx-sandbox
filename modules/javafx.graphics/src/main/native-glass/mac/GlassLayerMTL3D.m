@@ -37,8 +37,6 @@
 
 @implementation GlassLayerMTL3D
 
-static NSArray *allModes = nil;
-
 - (id) init:(long)mtlCommandQueuePtr
        withIsSwPipe:(BOOL)isSwPipe
 {
@@ -47,15 +45,6 @@ static NSArray *allModes = nil;
 
     [self setAutoresizingMask:(kCALayerWidthSizable|kCALayerHeightSizable)];
     [self setContentsGravity:kCAGravityTopLeft];
-
-    // Initially the view is not in any window yet, so using the
-    // screens[0]'s scale is a good starting point (this is most probably
-    // the notebook's main LCD display which is HiDPI-capable).
-    // Note that mainScreen is the screen with the current app bar focus
-    // in Mavericks and later OS so it will likely not match the screen
-    // we initially show windows on if an app is started from an external
-    // monitor.
-    [self notifyScaleFactorChanged:GetScreenScaleFactor([[NSScreen screens] objectAtIndex:0])];
 
     [self setMasksToBounds:YES];
     [self setNeedsDisplayOnBoundsChange:YES];
@@ -73,14 +62,8 @@ static NSArray *allModes = nil;
     } else {
         self->_blitCommandQueue = [self.device newCommandQueue];
     }
-    self->_painterOffscreen = (GlassOffscreen*)[[GlassMTLOffscreen alloc] initWithContext:nil andIsSwPipe:isSwPipe];
+    self->_painterOffscreen = (GlassOffscreen*)[[GlassMTLOffscreen alloc] initWithContext:self.device commandQueue:self->_blitCommandQueue andIsSwPipe:isSwPipe];
     [self->_painterOffscreen setLayer:self];
-
-    if (allModes == nil) {
-        allModes = [[NSArray arrayWithObjects:NSDefaultRunLoopMode,
-                                              NSEventTrackingRunLoopMode,
-                                              NSModalPanelRunLoopMode, nil] retain];
-    }
 
     self.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
 
@@ -93,16 +76,6 @@ static NSArray *allModes = nil;
     self->_painterOffscreen = nil;
 
     [super dealloc];
-}
-
-
-- (void)notifyScaleFactorChanged:(CGFloat)scale
-{
-    if (self->isHiDPIAware) {
-        if ([self respondsToSelector:@selector(setContentsScale:)]) {
-            [self setContentsScale: scale];
-        }
-    }
 }
 
 /*
@@ -128,24 +101,6 @@ static NSArray *allModes = nil;
 }
 
 */
-
-- (void)flush
-{
-
-    if ([NSThread isMainThread]) {
-        [[self->_painterOffscreen getLayer] setNeedsDisplay];
-    } else {
-        [[self->_painterOffscreen getLayer] performSelectorOnMainThread:@selector(setNeedsDisplay)
-                                                           withObject:nil
-                                                        waitUntilDone:NO
-                                                            modes:allModes];
-    }
-}
-
-- (void)setMTLDrawableSize:(CGSize)bounds
-{
-    [self setDrawableSize:bounds];
-}
 
 - (GlassOffscreen*)getPainterOffscreen
 {
@@ -213,45 +168,6 @@ static int nextDrawableCount = 0;
 
         [commandBuf commit];
         //[commandBuf waitUntilCompleted];
-    }
-}
-
-- (void) updateOffscreenTexture:(void*)pixels
-      layerWidth: (int)width
-      layerHeight:(int)height
-{
-    id<MTLTexture> backBufferTex = [self->_painterOffscreen texture];
-
-    if ((backBufferTex.width != width) ||
-        (backBufferTex.height != height)) {
-        return;
-    }
-
-    @autoreleasepool {
-        id<MTLCommandBuffer> commandBuf = [self->_blitCommandQueue commandBuffer];
-        if (commandBuf == nil) {
-            return;
-        }
-
-        id <MTLBlitCommandEncoder> blitEncoder = [commandBuf blitCommandEncoder];
-
-        id<MTLBuffer> buff = [[self.device newBufferWithBytes:pixels
-                                      length:width*height*4
-                                      options:0] autorelease];
-            [blitEncoder copyFromBuffer:buff
-                      sourceOffset:(NSUInteger)0
-                 sourceBytesPerRow:(NSUInteger)width * 4
-               sourceBytesPerImage:(NSUInteger)width * height * 4
-                        sourceSize:MTLSizeMake(width, height, 1)
-                         toTexture:backBufferTex
-                  destinationSlice:(NSUInteger)0
-                  destinationLevel:(NSUInteger)0
-                 destinationOrigin:MTLOriginMake(0, 0, 0)];
-
-        [blitEncoder endEncoding];
-
-        [commandBuf commit];
-        [commandBuf waitUntilCompleted];
     }
 }
 

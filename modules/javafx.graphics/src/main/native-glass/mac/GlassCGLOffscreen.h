@@ -39,6 +39,13 @@
     GlassCGLFrameBufferObject*  _fbo;
 
     GLboolean                   _dirty;
+    NSUInteger          _drawCounter; // draw counter, so that we only bind/unbind offscreen once
+    GLuint              _texture;
+    GLuint              _width;
+    GLuint              _height;
+    GLuint              _textureWidth;
+    GLuint              _textureHeight;
+    NSView* glassView;
 }
 
 - (id)initWithContext:(CGLContextObj)ctx
@@ -51,7 +58,13 @@
 - (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
 - (void)unbind;
 - (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height;
-
+- (void)flush:(GlassOffscreen*)glassOffScreen;
+- (void)pushPixels:(void*)pixels
+         withWidth:(unsigned int)width
+         withHeight:(unsigned int)height
+         withScaleX:(float)scalex
+         withScaleY:(float)scaley
+         ofView:(NSView*)view;
 - (GLboolean)isDirty;
 
 - (void)blitFromOffscreen:(GlassCGLOffscreen*)other_offscreen;

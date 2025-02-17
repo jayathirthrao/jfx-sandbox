@@ -30,7 +30,7 @@
 #import <Metal/Metal.h>
 
 #import "GlassOffscreen.h"
-
+// TODO: MTL: Try to convert this into a protocol
 @interface GlassOffscreen : NSObject
 {
     float                     _backgroundR;
@@ -52,6 +52,13 @@
 - (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height;
 - (unsigned char)isDirty;
 - (void)blitFromOffscreen:(GlassOffscreen*)other_offscreen;
+- (void)flush:(GlassOffscreen*)glassOffScreen;
+- (void)pushPixels:(void*)pixels
+         withWidth:(unsigned int)width
+         withHeight:(unsigned int)height
+         withScaleX:(float)scalex
+         withScaleY:(float)scaley
+         ofView:(NSView*)view;
 - (CALayer*)getLayer;
 - (void)setLayer:(CALayer*)new_layer;
 @end

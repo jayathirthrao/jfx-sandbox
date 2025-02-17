@@ -36,9 +36,12 @@
 @interface GlassMTLOffscreen : GlassOffscreen
 {
     GlassMTLFrameBufferObject*  _fbo;
+    id<MTLDevice> mtlDevice;
+    id<MTLCommandQueue> offScreenCommandQueue;
 }
 
-- (id)initWithContext:(NSObject*)ctx
+- (id)initWithContext:(id<MTLDevice>)device
+         commandQueue:(id<MTLCommandQueue>)commandQueue
             andIsSwPipe:(BOOL)isSwPipe;
 - (jlong)fbo;
 - (unsigned int)width;
@@ -47,7 +50,13 @@
 - (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
 - (void)unbind;
 - (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height;
-
+- (void)flush:(GlassOffscreen*)glassOffScreen;
+- (void)pushPixels:(void*)pixels
+         withWidth:(unsigned int)width
+         withHeight:(unsigned int)height
+         withScaleX:(float)scalex
+         withScaleY:(float)scaley
+         ofView:(NSView*)view;
 - (unsigned char)isDirty;
 
 - (void)blitFromOffscreen:(GlassMTLOffscreen*)other_offscreen;

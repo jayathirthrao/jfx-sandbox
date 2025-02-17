@@ -83,7 +83,7 @@
 
 - (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties
 {
-    LOG("GlassViewCGL3D initWithFrame:withJview:withJproperties");
+    LOG("GlassView3D initWithFrame:withJview:withJproperties");
 
     GET_MAIN_JENV;
     long mtlCommandQueuePtr = 0l;
@@ -128,14 +128,11 @@
     self = [super initWithFrame:frame];
     if (self != nil) {
         if (mtlCommandQueuePtr != 0l) {
-            self->isMtl = YES;
             GlassViewMTL3D* mtlSubView;
             subView = mtlSubView = [[GlassViewMTL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
             self->layer = [mtlSubView getLayer];
+            self->isHiDPIAware = YES;
         } else {
-            self->isMtl = NO;
-            self->_drawCounter = 0;
-            self->_texture = 0;
             GlassViewCGL3D* cglSubView;
             subView = cglSubView = [[GlassViewCGL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
             self->layer = [cglSubView getLayer];
@@ -159,14 +156,6 @@
 
 - (void)dealloc
 {
-    if (self->_texture != 0)
-    {
-        [[self->layer getPainterOffscreen] bindForWidth:(GLuint)[subView bounds].size.width andHeight:(GLuint)[subView bounds].size.height];
-        {
-            glDeleteTextures(1, &self->_texture);
-        }
-        [[self->layer getPainterOffscreen] unbind];
-    }
     [self removeTrackingArea: self->_trackingArea];
     [self->_trackingArea release];
     self->_trackingArea = nil;
@@ -522,126 +511,19 @@
 - (void)begin
 {
     LOG("begin");
-    if (self->isMtl) {
-        // TODO: MTL: implement isHiDPIAware similar to ES2 if needed, else remove it.
-        NSRect bounds = (/*self->isHiDPIAware &&*/ [subView respondsToSelector:@selector(convertRectToBacking:)]) ?
+    NSRect bounds = (self->isHiDPIAware && [subView respondsToSelector:@selector(convertRectToBacking:)]) ?
             [subView convertRectToBacking:[subView bounds]] : [subView bounds];
-
-        [[self->layer getPainterOffscreen] bindForWidth:bounds.size.width andHeight:bounds.size.height];
-
-        CGSize s = {bounds.size.width, bounds.size.height};
-        [self->layer setMTLDrawableSize:s];
-    } else {
-        assert(self->_drawCounter >= 0);
-
-        if (self->_drawCounter == 0)
-        {
-            NSRect bounds = (self->isHiDPIAware && [subView respondsToSelector:@selector(convertRectToBacking:)]) ?
-                [subView convertRectToBacking:[subView bounds]] : [subView bounds];
-            [[self->layer getPainterOffscreen] bindForWidth:(GLuint)bounds.size.width andHeight:(GLuint)bounds.size.height];
-        }
-        self->_drawCounter++;
-    }
+    [self->layer bindForWidth:bounds.size.width andHeight:bounds.size.height];
 }
 
 - (void)end
 {
-    if (self->isMtl) {
-        [self->layer flush];
-    } else {
-        assert(self->_drawCounter > 0);
-
-        self->_drawCounter--;
-        if (self->_drawCounter == 0)
-        {
-            [[self->layer getPainterOffscreen] unbind];
-            [self->layer flush];
-        }
-    }
+    [self->layer end];
 }
 
-- (void)pushPixels:(void*)pixels withWidth:(GLuint)width withHeight:(GLuint)height withScaleX:(GLfloat)scalex withScaleY:(GLfloat)scaley withEnv:(JNIEnv *)env
+- (void)pushPixels:(void*)pixels withWidth:(unsigned int)width withHeight:(unsigned int)height withScaleX:(float)scalex withScaleY:(float)scaley withEnv:(JNIEnv *)env
 {
-    if (self->isMtl) {
-        [self->layer updateOffscreenTexture:pixels layerWidth: width layerHeight:height];
-    } else {
-        assert(self->_drawCounter > 0);
-
-        if (self->_texture == 0)
-        {
-            glGenTextures(1, &self->_texture);
-        }
-
-        BOOL uploaded = NO;
-        if ((self->_textureWidth != width) || (self->_textureHeight != height))
-        {
-            uploaded = YES;
-
-            self->_textureWidth = width;
-            self->_textureHeight = height;
-
-            // GL_EXT_texture_rectangle is defined in OS X 10.6 GL headers, so we can depend on GL_TEXTURE_RECTANGLE_EXT being available
-            glBindTexture(GL_TEXTURE_RECTANGLE_EXT, self->_texture);
-            glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexImage2D(GL_TEXTURE_RECTANGLE_EXT, 0, GL_RGBA8, (GLsizei)self->_textureWidth, (GLsizei)self->_textureHeight, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
-        }
-
-        glEnable(GL_TEXTURE_RECTANGLE_EXT);
-        glBindTexture(GL_TEXTURE_RECTANGLE_EXT, self->_texture);
-        {
-            if (uploaded == NO)
-            {
-                glTexSubImage2D(GL_TEXTURE_RECTANGLE_EXT, 0, 0, 0, (GLsizei)self->_textureWidth, (GLsizei)self->_textureHeight, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
-            }
-
-            GLfloat w = self->_textureWidth;
-            GLfloat h = self->_textureHeight;
-
-            NSSize size = [self bounds].size;
-            size.width *= scalex;
-            size.height *= scaley;
-            if ((size.width != w) || (size.height != h))
-            {
-                // This could happen on live resize, clear the FBO to avoid rendering garbage
-                glClear(GL_COLOR_BUFFER_BIT);
-            }
-
-            glMatrixMode(GL_PROJECTION);
-            glPushMatrix();
-            glLoadIdentity();
-            glOrtho(0.0f, size.width, size.height, 0.0f, -1.0f, 1.0f);
-            {
-                glMatrixMode(GL_MODELVIEW);
-                glPushMatrix();
-                glLoadIdentity();
-                {
-                    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); // copy
-
-                    glBegin(GL_QUADS);
-                    {
-                        glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
-                        glTexCoord2f(   w, 0.0f); glVertex2f(   w, 0.0f);
-                        glTexCoord2f(   w,    h); glVertex2f(   w,    h);
-                        glTexCoord2f(0.0f,    h); glVertex2f(0.0f,    h);
-                    }
-                    glEnd();
-                }
-                glMatrixMode(GL_MODELVIEW);
-                glPopMatrix();
-            }
-            glMatrixMode(GL_PROJECTION);
-            glPopMatrix();
-        }
-        glBindTexture(GL_TEXTURE_RECTANGLE_EXT, 0);
-        glDisable(GL_TEXTURE_RECTANGLE_EXT);
-
-        glFinish();
-
-        // The layer will be notified about redraw in _end()
-    }
+    [self->layer pushPixels:pixels withWidth:width withHeight:height withScaleX:scalex withScaleY:scaley ofView:self];
 }
 
 - (void)setInputMethodEnabled:(BOOL)enabled

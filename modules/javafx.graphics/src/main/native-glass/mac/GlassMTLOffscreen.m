@@ -26,6 +26,7 @@
 
 
 #import "GlassMTLOffscreen.h"
+#import <QuartzCore/CAMetalLayer.h>
 
 #import "GlassMTLFrameBufferObject.h"
 //#import "GlassPBuffer.h"
@@ -39,7 +40,10 @@
 
 @implementation GlassMTLOffscreen
 
-- (id)initWithContext:(NSObject*)device
+static NSArray *allModes = nil;
+
+- (id)initWithContext:(id<MTLDevice>)device
+         commandQueue:(id<MTLCommandQueue>)commandQueue
             andIsSwPipe:(BOOL)isSwPipe;
 {
     self = [super init];
@@ -54,6 +58,13 @@
             }
             [(GlassMTLFrameBufferObject*)self->_fbo setIsSwPipe:(BOOL)isSwPipe];
         }
+        if (allModes == nil) {
+            allModes = [[NSArray arrayWithObjects:NSDefaultRunLoopMode,
+                                              NSEventTrackingRunLoopMode,
+                                              NSModalPanelRunLoopMode, nil] retain];
+        }
+        self->offScreenCommandQueue = commandQueue;
+        self->mtlDevice = device;
     }
     return self;
 }
@@ -94,6 +105,8 @@
 {
     //NSLog(@"GlassMTLOffscreen -------- w x h : %d x %d", width, height);
     [self->_fbo bindForWidth:width andHeight:height];
+    CGSize s = {width, height};
+    [(CAMetalLayer*)[self getLayer] setDrawableSize:s];
 }
 
 - (id<MTLTexture>)texture
@@ -105,6 +118,60 @@
 {
     {
         [self->_fbo blitForWidth:width andHeight:height];
+    }
+}
+
+- (void)flush:(GlassOffscreen*)glassOffScreen
+{
+    if ([NSThread isMainThread]) {
+        [[self getLayer] setNeedsDisplay];
+    } else {
+        [[self getLayer] performSelectorOnMainThread:@selector(setNeedsDisplay)
+                                                           withObject:nil
+                                                        waitUntilDone:NO
+                                                            modes:allModes];
+    }
+}
+
+- (void)pushPixels:(void*)pixels
+         withWidth:(unsigned int)width
+         withHeight:(unsigned int)height
+         withScaleX:(float)scalex
+         withScaleY:(float)scaley
+         ofView:(NSView*)view
+{
+    id<MTLTexture> backBufferTex = [self texture];
+
+    if ((backBufferTex.width != width) ||
+        (backBufferTex.height != height)) {
+        return;
+    }
+
+    @autoreleasepool {
+        id<MTLCommandBuffer> commandBuf = [self->offScreenCommandQueue commandBuffer];
+        if (commandBuf == nil) {
+            return;
+        }
+
+        id <MTLBlitCommandEncoder> blitEncoder = [commandBuf blitCommandEncoder];
+
+        id<MTLBuffer> buff = [[self->mtlDevice newBufferWithBytes:pixels
+                                      length:width*height*4
+                                      options:0] autorelease];
+            [blitEncoder copyFromBuffer:buff
+                      sourceOffset:(NSUInteger)0
+                 sourceBytesPerRow:(NSUInteger)width * 4
+               sourceBytesPerImage:(NSUInteger)width * height * 4
+                        sourceSize:MTLSizeMake(width, height, 1)
+                         toTexture:backBufferTex
+                  destinationSlice:(NSUInteger)0
+                  destinationLevel:(NSUInteger)0
+                 destinationOrigin:MTLOriginMake(0, 0, 0)];
+
+        [blitEncoder endEncoding];
+
+        [commandBuf commit];
+        [commandBuf waitUntilCompleted];
     }
 }
 

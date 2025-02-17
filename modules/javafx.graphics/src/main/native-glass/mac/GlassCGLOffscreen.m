@@ -37,12 +37,16 @@
 
 @implementation GlassCGLOffscreen
 
+static NSArray *allModes = nil;
+
 - (id)initWithContext:(CGLContextObj)ctx
             andIsSwPipe:(BOOL)isSwPipe;
 {
     self = [super init];
     if (self != nil)
     {
+        self->_drawCounter = 0;
+        self->_texture = 0;
         self->_ctx = CGLRetainContext(ctx);
 
         [self setContext];
@@ -56,6 +60,11 @@
             [(GlassCGLFrameBufferObject*)self->_fbo setIsSwPipe:(BOOL)isSwPipe];
         }
         [self unsetContext];
+        if (allModes == nil) {
+            allModes = [[NSArray arrayWithObjects:NSDefaultRunLoopMode,
+                                                  NSEventTrackingRunLoopMode,
+                                                  NSModalPanelRunLoopMode, nil] retain];
+        }
     }
     return self;
 }
@@ -67,6 +76,15 @@
 
 - (void)dealloc
 {
+    if (self->_texture != 0)
+    {
+        [self bindForWidth:(GLuint)[self->glassView bounds].size.width
+            andHeight:(GLuint)[self->glassView bounds].size.height];
+        {
+            glDeleteTextures(1, &self->_texture);
+        }
+        [self unbind];
+    }
     [self setContext];
     {
         [(NSObject*)self->_fbo release];
@@ -110,8 +128,117 @@
 
 - (void)bindForWidth:(GLuint)width andHeight:(GLuint)height
 {
-    [self setContext];
-    [self->_fbo bindForWidth:width andHeight:height];
+    assert(self->_drawCounter >= 0);
+    if (self->_drawCounter == 0)
+    {
+        self->_width = width;
+        self->_height = height;
+        [self setContext];
+        [self->_fbo bindForWidth:width andHeight:height];
+    }
+    self->_drawCounter++;
+}
+
+- (void)flush:(GlassOffscreen*)glassOffScreen
+{
+    assert(self->_drawCounter > 0);
+    self->_drawCounter--;
+    if (self->_drawCounter == 0)
+    {
+        [self unbind];
+        [(GlassCGLOffscreen*)glassOffScreen blitFromOffscreen:(GlassCGLOffscreen*)self];
+        if ([NSThread isMainThread]) {
+            [[(GlassCGLOffscreen*)glassOffScreen getLayer] setNeedsDisplay];
+        } else {
+            [[(GlassCGLOffscreen*)glassOffScreen getLayer] performSelectorOnMainThread:@selector(setNeedsDisplay)
+                                                           withObject:nil
+                                                        waitUntilDone:NO
+                                                                modes:allModes];
+        }
+    }
+}
+
+- (void)pushPixels:(void*)pixels
+         withWidth:(unsigned int)width
+         withHeight:(unsigned int)height
+         withScaleX:(float)scalex
+         withScaleY:(float)scaley
+         ofView:(NSView*)view
+{
+    assert(self->_drawCounter > 0);
+
+    if (self->_texture == 0)
+    {
+        glGenTextures(1, &self->_texture);
+    }
+    self->glassView = view;
+    BOOL uploaded = NO;
+    if ((self->_textureWidth != width) || (self->_textureHeight != height))
+    {
+        uploaded = YES;
+
+        self->_textureWidth = width;
+        self->_textureHeight = height;
+
+        // GL_EXT_texture_rectangle is defined in OS X 10.6 GL headers, so we can depend on GL_TEXTURE_RECTANGLE_EXT being available
+        glBindTexture(GL_TEXTURE_RECTANGLE_EXT, self->_texture);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexImage2D(GL_TEXTURE_RECTANGLE_EXT, 0, GL_RGBA8, (GLsizei)self->_textureWidth, (GLsizei)self->_textureHeight, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
+    }
+
+    glEnable(GL_TEXTURE_RECTANGLE_EXT);
+    glBindTexture(GL_TEXTURE_RECTANGLE_EXT, self->_texture);
+    {
+        if (uploaded == NO)
+        {
+            glTexSubImage2D(GL_TEXTURE_RECTANGLE_EXT, 0, 0, 0, (GLsizei)self->_textureWidth, (GLsizei)self->_textureHeight, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
+        }
+
+        GLfloat w = self->_textureWidth;
+        GLfloat h = self->_textureHeight;
+
+        NSSize size = [self->glassView bounds].size;
+        size.width *= scalex;
+        size.height *= scaley;
+        if ((size.width != w) || (size.height != h))
+        {
+            // This could happen on live resize, clear the FBO to avoid rendering garbage
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
+
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+        glOrtho(0.0f, size.width, size.height, 0.0f, -1.0f, 1.0f);
+        {
+            glMatrixMode(GL_MODELVIEW);
+            glPushMatrix();
+            glLoadIdentity();
+            {
+                glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); // copy
+
+                glBegin(GL_QUADS);
+                {
+                    glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);
+                    glTexCoord2f(   w, 0.0f); glVertex2f(   w, 0.0f);
+                    glTexCoord2f(   w,    h); glVertex2f(   w,    h);
+                    glTexCoord2f(0.0f,    h); glVertex2f(0.0f,    h);
+                }
+                glEnd();
+            }
+            glMatrixMode(GL_MODELVIEW);
+            glPopMatrix();
+        }
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+    }
+    glBindTexture(GL_TEXTURE_RECTANGLE_EXT, 0);
+    glDisable(GL_TEXTURE_RECTANGLE_EXT);
+
+    glFinish();
 }
 
 - (void)unbind

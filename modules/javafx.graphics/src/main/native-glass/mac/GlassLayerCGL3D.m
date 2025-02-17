@@ -37,8 +37,6 @@
 
 @implementation GlassLayerCGL3D
 
-static NSArray *allModes = nil;
-
 - (id)initWithSharedContext:(CGLContextObj)ctx
            andClientContext:(CGLContextObj)clCtx
              withHiDPIAware:(BOOL)HiDPIAware
@@ -59,24 +57,9 @@ static NSArray *allModes = nil;
         [self setAutoresizingMask:(kCALayerWidthSizable|kCALayerHeightSizable)];
         [self setContentsGravity:kCAGravityTopLeft];
 
-        // Initially the view is not in any window yet, so using the
-        // screens[0]'s scale is a good starting point (this is most probably
-        // the notebook's main LCD display which is HiDPI-capable).
-        // Note that mainScreen is the screen with the current app bar focus
-        // in Mavericks and later OS so it will likely not match the screen
-        // we initially show windows on if an app is started from an external
-        // monitor.
-        [self notifyScaleFactorChanged:GetScreenScaleFactor([[NSScreen screens] objectAtIndex:0])];
-
         [self setMasksToBounds:YES];
         [self setNeedsDisplayOnBoundsChange:YES];
         [self setAnchorPoint:CGPointMake(0.0f, 0.0f)];
-
-        if (allModes == nil) {
-            allModes = [[NSArray arrayWithObjects:NSDefaultRunLoopMode,
-                                                  NSEventTrackingRunLoopMode,
-                                                  NSModalPanelRunLoopMode, nil] retain];
-        }
 
         self.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
     }
@@ -92,15 +75,6 @@ static NSArray *allModes = nil;
     self->_painterOffscreen = nil;
 
     [super dealloc];
-}
-
-- (void)notifyScaleFactorChanged:(CGFloat)scale
-{
-    if (self->isHiDPIAware) {
-        if ([self respondsToSelector:@selector(setContentsScale:)]) {
-            [self setContentsScale: scale];
-        }
-    }
 }
 
 //- (void)setBounds:(CGRect)bounds
@@ -155,19 +129,6 @@ static NSArray *allModes = nil;
     // the default implementation of the method flushes the context.
     [super drawInCGLContext:glContext pixelFormat:pixelFormat forLayerTime:timeInterval displayTime:timeStamp];
     LOG("\n");
-}
-
-- (void)flush
-{
-    [(GlassCGLOffscreen*)_glassOffscreen blitFromOffscreen:(GlassCGLOffscreen*)_painterOffscreen];
-    if ([NSThread isMainThread]) {
-        [[self->_glassOffscreen getLayer] setNeedsDisplay];
-    } else {
-        [[self->_glassOffscreen getLayer] performSelectorOnMainThread:@selector(setNeedsDisplay)
-                                                           withObject:nil
-                                                        waitUntilDone:NO
-                                                                modes:allModes];
-    }
 }
 
 - (GlassOffscreen*)getPainterOffscreen

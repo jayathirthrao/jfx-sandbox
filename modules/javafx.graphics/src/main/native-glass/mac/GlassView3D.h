@@ -39,10 +39,6 @@
     GlassLayer3D *layer;
 
     NSView *subView;
-
-    NSUInteger          _drawCounter; // draw counter, so that we only bind/unbind offscreen once
-
-    GLuint              _texture;
     GLuint              _textureWidth;
     GLuint              _textureHeight;
 
@@ -50,7 +46,6 @@
     BOOL imEnabled;
     BOOL handlingKeyEvent;
     BOOL didCommitText;
-    BOOL isMtl;
 
     BOOL isHiDPIAware;
 

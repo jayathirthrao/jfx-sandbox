@@ -49,14 +49,17 @@ static NSArray *allModes = nil;
     if (self != nil)
     {
         if (mtlCommandQueuePtr != 0l) { // MTL
-            layer = mtlLayer = [[GlassLayerMTL3D alloc] init:mtlCommandQueuePtr withIsSwPipe:isSwPipe];
+            GlassLayerMTL3D* mtlLayer = [[GlassLayerMTL3D alloc] init:mtlCommandQueuePtr withIsSwPipe:isSwPipe];
+            self->painterOffScreen = [mtlLayer getPainterOffscreen];
+            self->glassOffScreen = nil;
             [self addSublayer:mtlLayer];
-            self->isMTL = YES;
         } else {
-            layer = cglLayer = [[GlassLayerCGL3D alloc] initWithSharedContext:ctx andClientContext:clCtx withHiDPIAware:HiDPIAware withIsSwPipe:isSwPipe];
+            GlassLayerCGL3D* cglLayer = [[GlassLayerCGL3D alloc] initWithSharedContext:ctx andClientContext:clCtx withHiDPIAware:HiDPIAware withIsSwPipe:isSwPipe];
+            self->painterOffScreen = [cglLayer getPainterOffscreen];
+            self->glassOffScreen = [cglLayer getGlassOffscreen];
             [self addSublayer:cglLayer];
-            self->isMTL = NO;
         }
+        self->isHiDPIAware = HiDPIAware;
         //self->_painterOffscreen = [[GlassCGLOffscreen alloc] initWithContext:clCtx andIsSwPipe:isSwPipe];
         //self->_glassOffscreen = [[GlassCGLOffscreen alloc] initWithContext:ctx andIsSwPipe:isSwPipe];
         //[self->_glassOffscreen setLayer:self];
@@ -94,56 +97,38 @@ static NSArray *allModes = nil;
 
 - (void)notifyScaleFactorChanged:(CGFloat)scale
 {
-    if (self->isMTL) {
-        [mtlLayer notifyScaleFactorChanged:scale];
-    } else {
-        [cglLayer notifyScaleFactorChanged:scale];
-    }
-    /*if (self->isHiDPIAware) {
-        if ([self respondsToSelector:@selector(setContentsScale:)]) {
-            [self setContentsScale: scale];
+    if (self->isHiDPIAware) {
+        if ([self.sublayers[0] respondsToSelector:@selector(setContentsScale:)]) {
+            [self.sublayers[0] setContentsScale: scale];
         }
-    }*/
-}
-
-- (void)flush
-{
-    if (self->isMTL) {
-        [mtlLayer flush];
-    } else {
-        [cglLayer flush];
     }
-    /*[(GlassCGLOffscreen*)_glassOffscreen blitFromOffscreen:(GlassCGLOffscreen*)_painterOffscreen];
-    if ([NSThread isMainThread]) {
-        [[self->_glassOffscreen getLayer] setNeedsDisplay];
-    } else {
-        [[self->_glassOffscreen getLayer] performSelectorOnMainThread:@selector(setNeedsDisplay)
-                                                           withObject:nil
-                                                        waitUntilDone:NO
-                                                                modes:allModes];
-    }*/
 }
 
-// TODO: Again we need common OffScreen
+- (void)end
+{
+    [self->painterOffScreen flush:self->glassOffScreen];
+}
+
+- (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height
+{
+    [self->painterOffScreen bindForWidth:width andHeight:height];
+}
+
 - (GlassOffscreen*)getPainterOffscreen
 {
-    if (self->isMTL) {
-        return [mtlLayer getPainterOffscreen];
-    } else {
-        return [cglLayer getPainterOffscreen];
-    }
+    return self->painterOffScreen;
 }
 
-- (void)setMTLDrawableSize:(CGSize)bounds
+- (void)pushPixels:(void*)pixels
+         withWidth:(unsigned int)width
+         withHeight:(unsigned int)height
+         withScaleX:(float)scalex
+         withScaleY:(float)scaley
+         ofView:(NSView*)view
 {
-    [mtlLayer setMTLDrawableSize:bounds];
-}
-
-- (void) updateOffscreenTexture:(void*)pixels
-                     layerWidth:(int)width
-                     layerHeight:(int)height
-{
-    [mtlLayer updateOffscreenTexture:pixels layerWidth: width layerHeight:height];
+    [self->painterOffScreen pushPixels:pixels withWidth:width
+        withHeight:height withScaleX:scalex withScaleY:scaley
+        ofView:view];
 }
 
 /*- (GlassCGLOffscreen*)getGlassOffscreen

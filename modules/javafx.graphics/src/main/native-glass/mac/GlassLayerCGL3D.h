@@ -45,8 +45,5 @@
 - (GlassOffscreen*)getPainterOffscreen;
 - (GlassOffscreen*)getGlassOffscreen;
 - (void)hostOffscreen:(GlassOffscreen*)offscreen;
-- (void)flush;
-
-- (void)notifyScaleFactorChanged:(CGFloat)scale;
 
 @end
