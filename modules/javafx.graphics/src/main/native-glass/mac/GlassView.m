@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -343,7 +343,6 @@ JNIEXPORT jlong JNICALL Java_com_sun_glass_ui_mac_MacView__1getNativeFrameBuffer
     {
         GlassView3D<GlassView> *view = getGlassView(env, jPtr);
         GlassLayer3D *layer = (GlassLayer3D*)[view getLayer];
-        // TODO : Get common offscreen surface
         fb = (jlong) [[layer getPainterOffscreen] fbo];
     }
     GLASS_POOL_EXIT;
@@ -370,7 +369,6 @@ JNIEXPORT jlong JNICALL Java_com_sun_glass_ui_mac_MacView__1getNativeLayer
     GLASS_POOL_ENTER;
     {
         GlassView3D<GlassView> *view = getGlassView(env, jPtr);
-        //GlassLayerMTL3D *layer = (GlassLayerMTL3D*)[view getLayer];
         CALayer *layer = [view getLayer];
         ptr = ptr_to_jlong(layer);
     }

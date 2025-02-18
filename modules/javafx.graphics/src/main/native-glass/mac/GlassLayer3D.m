@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -60,9 +60,6 @@ static NSArray *allModes = nil;
             [self addSublayer:cglLayer];
         }
         self->isHiDPIAware = HiDPIAware;
-        //self->_painterOffscreen = [[GlassCGLOffscreen alloc] initWithContext:clCtx andIsSwPipe:isSwPipe];
-        //self->_glassOffscreen = [[GlassCGLOffscreen alloc] initWithContext:ctx andIsSwPipe:isSwPipe];
-        //[self->_glassOffscreen setLayer:self];
         LOG("   GlassLayer3D context: %p", ctx);
 
         [self setAutoresizingMask:(kCALayerWidthSizable|kCALayerHeightSizable)];
@@ -130,17 +127,5 @@ static NSArray *allModes = nil;
         withHeight:height withScaleX:scalex withScaleY:scaley
         ofView:view];
 }
-
-/*- (GlassCGLOffscreen*)getGlassOffscreen
-{
-    return self->_glassOffscreen;
-}
-
-- (void)hostOffscreen:(GlassCGLOffscreen*)offscreen
-{
-    [self->_glassOffscreen release];
-    self->_glassOffscreen = [offscreen retain];
-    [self->_glassOffscreen setLayer:self];
-}*/
 
 @end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -78,35 +78,10 @@
     [super dealloc];
 }
 
-/*
-//- (void)setBounds:(CGRect)bounds
-//{
-//    LOG("GlassLayer3D setBounds:%s", [NSStringFromRect(NSRectFromCGRect(bounds)) UTF8String]);
-//    [super setBounds:bounds];
-//}
-
-- (BOOL)canDrawInCGLContext:(CGLContextObj)glContext pixelFormat:(CGLPixelFormatObj)pixelFormat forLayerTime:(CFTimeInterval)timeInterval displayTime:(const CVTimeStamp *)timeStamp
-{
-    return [self->_glassOffscreen isDirty];
-}
-
-- (CGLContextObj)copyCGLContextForPixelFormat:(CGLPixelFormatObj)pixelFormat
-{
-    return CGLRetainContext([self->_glassOffscreen getContext]);
-}
-
-- (CGLPixelFormatObj)copyCGLPixelFormatForDisplayMask:(uint32_t)mask
-{
-    return CGLRetainPixelFormat(CGLGetPixelFormat([self->_glassOffscreen getContext]));
-}
-
-*/
-
 - (GlassOffscreen*)getPainterOffscreen
 {
     return self->_painterOffscreen;
 }
-
 
 - (void)display {
 

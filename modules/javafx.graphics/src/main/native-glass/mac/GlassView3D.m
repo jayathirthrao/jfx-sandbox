@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -348,10 +348,6 @@
 {
     KEYLOG("performKeyEquivalent");
 
-    // Crash if the FS window is released while performing a key equivalent
-    // Local copy of the id keeps the retain/release calls balanced.
-    //id fsWindow = [self->_delegate->fullscreenWindow retain];
-
     // RT-37093, RT-37399 Command-EQUALS and Command-DOT needs special casing on Mac
     // as it is passed through as two calls to performKeyEquivalent, which in turn
     // create extra KeyEvents.
@@ -381,13 +377,11 @@
             (*env)->DeleteLocalRef(env, jKeyChars);
 
             GLASS_CHECK_EXCEPTION(env);
-            //[fsWindow release];
             return YES;
         }
     }
 
     BOOL result = [self handleKeyDown: theEvent];
-    //[fsWindow release];
     return result;
 }
 
@@ -747,11 +741,6 @@
 {
     return self->layer;
 }
-
-/*- (long)getFBO
-{
-    return [[self->_layer getPainterOffscreen] fbo];
-}*/
 
 - (GlassViewDelegate*)delegate
 {

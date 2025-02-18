@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -76,12 +76,6 @@
 
     [super dealloc];
 }
-
-//- (void)setBounds:(CGRect)bounds
-//{
-//    LOG("GlassLayerCGL3D setBounds:%s", [NSStringFromRect(NSRectFromCGRect(bounds)) UTF8String]);
-//    [super setBounds:bounds];
-//}
 
 - (BOOL)canDrawInCGLContext:(CGLContextObj)glContext pixelFormat:(CGLPixelFormatObj)pixelFormat forLayerTime:(CFTimeInterval)timeInterval displayTime:(const CVTimeStamp *)timeStamp
 {

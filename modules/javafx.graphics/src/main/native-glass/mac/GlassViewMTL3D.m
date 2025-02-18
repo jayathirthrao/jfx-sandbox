@@ -73,9 +73,6 @@
 #define SHARE_GL_CONTEXT
 //#define DEBUG_COLORS
 
-// http://developer.apple.com/library/mac/#technotes/tn2085/_index.html
-//#define ENABLE_MULTITHREADED_GL
-
 @implementation GlassViewMTL3D
 
 - (void)_initialize3dWithJproperties:(jobject)jproperties
