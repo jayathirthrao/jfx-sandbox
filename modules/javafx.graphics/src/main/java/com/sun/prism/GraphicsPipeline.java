@@ -196,20 +196,6 @@ public abstract class GraphicsPipeline {
                                             installedPipeline);
         }
 
-        // TODO: MTL: This is a temporary change to allow only mtl pipeline
-        // to be specified with prism.order in ea release.
-        // This change should be reverted in future.
-        if (PlatformUtil.isMac()) {
-            if (!(PrismSettings.tryOrder.contains("mtl") ||
-                 (PrismSettings.tryOrder.contains("sw")) ||
-                 (PrismSettings.tryOrder.contains("es2")))) {
-                System.err.println("*** This ea release supports only mtl & sw pipeline, mtl pipeline is default.");
-                System.err.println("*** Other pipelines(es2) are not supported.");
-                System.err.println("*** Use only: -Dprism.order=mtl or -Dprism.order=sw");
-                return null;
-            }
-        }
-
         for (String prefix : PrismSettings.tryOrder) {
             // Warn if j2d pipeline is specified
             if ("j2d".equals(prefix)) {
