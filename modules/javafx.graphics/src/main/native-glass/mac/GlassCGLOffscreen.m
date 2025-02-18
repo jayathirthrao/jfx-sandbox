@@ -292,6 +292,11 @@ static NSArray *allModes = nil;
     return self->_dirty;
 }
 
+- (void)blit
+{
+    [self blitForWidth:[self->_fbo width] andHeight:[self->_fbo height]];
+}
+
 - (void)blitFromOffscreen:(GlassCGLOffscreen*)other_offscreen
 {
     [self setContext];

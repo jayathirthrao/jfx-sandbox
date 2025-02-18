@@ -109,7 +109,7 @@ static NSArray *allModes = nil;
     [(CAMetalLayer*)[self getLayer] setDrawableSize:s];
 }
 
-- (id<MTLTexture>)texture
+- (id<MTLTexture>)getMTLTexture
 {
     return [self->_fbo texture];
 }
@@ -140,7 +140,7 @@ static NSArray *allModes = nil;
          withScaleY:(float)scaley
          ofView:(NSView*)view
 {
-    id<MTLTexture> backBufferTex = [self texture];
+    id<MTLTexture> backBufferTex = [self getMTLTexture];
 
     if ((backBufferTex.width != width) ||
         (backBufferTex.height != height)) {
@@ -179,6 +179,11 @@ static NSArray *allModes = nil;
 {
     // no-op in case of MTL
     return 0;
+}
+
+- (void)blit
+{
+    [self blitForWidth:[self->_fbo width] andHeight:[self->_fbo height]];
 }
 
 // TODO: MTL: This just creates another texture and doesn't do any blit

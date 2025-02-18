@@ -43,22 +43,6 @@
 - (id)initWithContext:(id<MTLDevice>)device
          commandQueue:(id<MTLCommandQueue>)commandQueue
             andIsSwPipe:(BOOL)isSwPipe;
-- (jlong)fbo;
-- (unsigned int)width;
-- (unsigned int)height;
-- (id<MTLTexture>)texture;
-- (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
-- (void)unbind;
-- (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height;
-- (void)flush:(GlassOffscreen*)glassOffScreen;
-- (void)pushPixels:(void*)pixels
-         withWidth:(unsigned int)width
-         withHeight:(unsigned int)height
-         withScaleX:(float)scalex
-         withScaleY:(float)scaley
-         ofView:(NSView*)view;
-- (unsigned char)isDirty;
-
-- (void)blitFromOffscreen:(GlassMTLOffscreen*)other_offscreen;
+- (id<MTLTexture>)getMTLTexture;
 
 @end

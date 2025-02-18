@@ -51,22 +51,6 @@
 - (id)initWithContext:(CGLContextObj)ctx
             andIsSwPipe:(BOOL)isSwPipe;
 - (CGLContextObj)getContext;
-- (long)fbo;
-- (unsigned int)width;
-- (unsigned int)height;
 - (GLuint)texture;
-- (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
-- (void)unbind;
-- (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height;
-- (void)flush:(GlassOffscreen*)glassOffScreen;
-- (void)pushPixels:(void*)pixels
-         withWidth:(unsigned int)width
-         withHeight:(unsigned int)height
-         withScaleX:(float)scalex
-         withScaleY:(float)scaley
-         ofView:(NSView*)view;
-- (GLboolean)isDirty;
-
-- (void)blitFromOffscreen:(GlassCGLOffscreen*)other_offscreen;
 
 @end

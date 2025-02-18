@@ -24,11 +24,11 @@
  */
 
 #import <Cocoa/Cocoa.h>
-
 #import <OpenGL/gl.h>
 #import <OpenGL/OpenGL.h>
 #import <Metal/Metal.h>
 
+#import "common.h"
 #import "GlassOffscreen.h"
 // TODO: MTL: Try to convert this into a protocol
 @interface GlassOffscreen : NSObject
@@ -42,10 +42,10 @@
 
 - (void)setBackgroundColor:(NSColor*)color;
 - (CGLContextObj)getContext;
-- (long)fbo;
+- (id<MTLTexture>)getMTLTexture;
+- (jlong)fbo;
 - (unsigned int)width;
 - (unsigned int)height;
-- (id<MTLTexture>)texture;
 - (void)bindForWidth:(unsigned int)width andHeight:(unsigned int)height;
 - (void)unbind;
 - (void)blit;

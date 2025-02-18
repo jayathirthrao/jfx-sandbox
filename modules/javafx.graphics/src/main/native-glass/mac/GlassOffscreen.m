@@ -51,11 +51,6 @@
     return self;
 }
 
-- (CGLContextObj)getContext
-{
-    return nil;
-}
-
 - (void)dealloc
 {
     [super dealloc];
@@ -92,6 +87,16 @@
 {
 }
 
+- (id<MTLTexture>)getMTLTexture
+{
+    return nil;
+}
+
+- (CGLContextObj)getContext
+{
+    return nil;
+}
+
 - (void)flush:(GlassOffscreen*)glassOffScreen
 {
 }
@@ -107,11 +112,6 @@
 
 - (void)blit
 {
-}
-
-- (id<MTLTexture>)texture
-{
-    return nil;
 }
 
 - (void)blitForWidth:(unsigned int)width andHeight:(unsigned int)height
