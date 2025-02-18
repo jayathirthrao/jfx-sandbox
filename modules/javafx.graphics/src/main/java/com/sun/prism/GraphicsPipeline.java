@@ -215,10 +215,8 @@ public abstract class GraphicsPipeline {
                 }
             }
 
-            //String className =
-                //"com.sun.prism."+prefix+"."+prefix.toUpperCase()+"Pipeline";
             String className =
-                "com.sun.prism.es2.ES2Pipeline";
+                "com.sun.prism."+prefix+"."+prefix.toUpperCase()+"Pipeline";
             try {
                 if (PrismSettings.verbose) {
                     System.out.println("Prism pipeline name = " + className);
