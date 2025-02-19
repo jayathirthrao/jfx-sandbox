@@ -26,8 +26,6 @@
 #import "common.h"
 #import <Cocoa/Cocoa.h>
 #import <Metal/Metal.h>
-#import <OpenGL/gl.h>
-#import <OpenGL/OpenGL.h>
 #import <QuartzCore/CAMetalLayer.h>
 
 #import "GlassOffscreen.h"

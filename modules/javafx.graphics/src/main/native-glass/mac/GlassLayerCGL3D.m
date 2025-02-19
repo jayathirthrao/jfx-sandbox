@@ -84,12 +84,12 @@
 
 - (CGLContextObj)copyCGLContextForPixelFormat:(CGLPixelFormatObj)pixelFormat
 {
-    return CGLRetainContext([self->_glassOffscreen getContext]);
+    return CGLRetainContext([(GlassCGLOffscreen*)self->_glassOffscreen getContext]);
 }
 
 - (CGLPixelFormatObj)copyCGLPixelFormatForDisplayMask:(uint32_t)mask
 {
-    return CGLRetainPixelFormat(CGLGetPixelFormat([self->_glassOffscreen getContext]));
+    return CGLRetainPixelFormat(CGLGetPixelFormat([(GlassCGLOffscreen*)self->_glassOffscreen getContext]));
 }
 
 - (void)drawInCGLContext:(CGLContextObj)glContext pixelFormat:(CGLPixelFormatObj)pixelFormat forLayerTime:(CFTimeInterval)timeInterval displayTime:(const CVTimeStamp *)timeStamp

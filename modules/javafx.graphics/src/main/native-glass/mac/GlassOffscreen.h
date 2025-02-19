@@ -24,9 +24,6 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import <OpenGL/gl.h>
-#import <OpenGL/OpenGL.h>
-#import <Metal/Metal.h>
 
 #import "common.h"
 #import "GlassOffscreen.h"
@@ -41,8 +38,6 @@
 }
 
 - (void)setBackgroundColor:(NSColor*)color;
-- (CGLContextObj)getContext;
-- (id<MTLTexture>)getMTLTexture;
 - (jlong)fbo;
 - (unsigned int)width;
 - (unsigned int)height;

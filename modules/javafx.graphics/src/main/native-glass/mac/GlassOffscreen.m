@@ -87,16 +87,6 @@
 {
 }
 
-- (id<MTLTexture>)getMTLTexture
-{
-    return nil;
-}
-
-- (CGLContextObj)getContext
-{
-    return nil;
-}
-
 - (void)flush:(GlassOffscreen*)glassOffScreen
 {
 }

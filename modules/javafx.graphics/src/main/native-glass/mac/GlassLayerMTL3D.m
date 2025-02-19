@@ -94,7 +94,7 @@ static int nextDrawableCount = 0;
 
 - (void) blitToScreen
 {
-    id<MTLTexture> backBufferTex = [self->_painterOffscreen getMTLTexture];
+    id<MTLTexture> backBufferTex = [(GlassMTLOffscreen*)self->_painterOffscreen getMTLTexture];
 
     if (backBufferTex == nil) {
         return;

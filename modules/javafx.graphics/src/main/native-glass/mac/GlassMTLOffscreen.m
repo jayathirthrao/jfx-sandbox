@@ -138,7 +138,7 @@ static NSArray *allModes = nil;
          withScaleY:(float)scaley
          ofView:(NSView*)view
 {
-    id<MTLTexture> backBufferTex = [self getMTLTexture];
+    id<MTLTexture> backBufferTex = [self->_fbo texture];
 
     if ((backBufferTex.width != width) ||
         (backBufferTex.height != height)) {
