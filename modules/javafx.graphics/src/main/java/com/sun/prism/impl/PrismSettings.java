@@ -210,7 +210,7 @@ public final class PrismSettings {
             } else if (PlatformUtil.isMac()) {
                 // TODO: MTL: This order is temporary. During the initial releases,
                 // es2 will remain first in order.
-                tryOrderArr = new String[] { "mtl", "es2", "sw" };
+                tryOrderArr = new String[] { "es2", "mtl", "sw" };
             } else if (PlatformUtil.isIOS()) {
                 tryOrderArr = new String[] { "es2" };
             } else if (PlatformUtil.isAndroid()) {
