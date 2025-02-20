@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -29,7 +29,6 @@ import com.sun.glass.ui.Screen;
 import com.sun.javafx.font.FontFactory;
 import com.sun.javafx.font.PrismFontFactory;
 import com.sun.prism.impl.PrismSettings;
-import com.sun.javafx.PlatformUtil;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -195,7 +194,6 @@ public abstract class GraphicsPipeline {
             throw new IllegalStateException("pipeline already created:"+
                                             installedPipeline);
         }
-
         for (String prefix : PrismSettings.tryOrder) {
             // Warn if j2d pipeline is specified
             if ("j2d".equals(prefix)) {

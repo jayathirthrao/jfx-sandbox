@@ -26,6 +26,8 @@
 #import "GlassLayer3D.h"
 #import "GlassMacros.h"
 #import "GlassScreen.h"
+#import "GlassLayerCGL3D.h"
+#import "GlassLayerMTL3D.h"
 
 //#define VERBOSE
 #ifndef VERBOSE

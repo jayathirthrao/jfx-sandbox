@@ -26,12 +26,8 @@
 #import <Cocoa/Cocoa.h>
 
 #import "GlassView.h"
-#import "GlassViewMTL3D.h"
-#import "GlassViewCGL3D.h"
 #import "GlassLayer3D.h"
-//#import "GlassCGLOffscreen.h"
 
-// 3D version of Glass providing OpenGL context through CAOpenGLLayer
 @interface GlassView3D : NSView <GlassView, NSTextInputClient>
 {
     GlassViewDelegate   *_delegate;
@@ -39,8 +35,6 @@
     GlassLayer3D *layer;
 
     NSView *subView;
-    GLuint              _textureWidth;
-    GLuint              _textureHeight;
 
     NSAttributedString *nsAttrBuffer;
     BOOL imEnabled;

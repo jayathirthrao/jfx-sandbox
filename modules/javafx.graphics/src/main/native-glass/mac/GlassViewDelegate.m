@@ -39,8 +39,6 @@
 #import "GlassScreen.h"
 #import "GlassWindow.h"
 #import "GlassApplication.h"
-#import "GlassLayerCGL3D.h"
-#import "GlassLayerMTL3D.h"
 #import "GlassPasteboard.h"
 #import "GlassHelper.h"
 #import "GlassStatics.h"

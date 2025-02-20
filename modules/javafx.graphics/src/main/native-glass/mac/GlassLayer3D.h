@@ -23,10 +23,7 @@
  * questions.
  */
 
-#import "GlassLayerCGL3D.h"
-#import "GlassLayerMTL3D.h"
-#import "GlassCGLOffscreen.h"
-#import "GlassMTLOffscreen.h"
+#import "GlassOffscreen.h"
 
 @interface GlassLayer3D : CALayer
 {

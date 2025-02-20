@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,12 +24,11 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import <Metal/Metal.h>
 
 #import "GlassView.h"
-#import "GlassMTLOffscreen.h"
 #import "GlassLayer3D.h"
 
+// 3D version of Glass for Metal using CAMetalLayer
 @interface GlassViewMTL3D : NSView
 {
     GlassLayer3D* layer;

@@ -24,9 +24,6 @@
  */
 
 #import "GlassOffscreen.h"
-
-#import "GlassMTLOffscreen.h"
-#import "GlassCGLOffscreen.h"
 //#import "GlassPBuffer.h"
 
 //#define VERBOSE

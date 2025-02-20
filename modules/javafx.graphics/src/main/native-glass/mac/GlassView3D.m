@@ -33,9 +33,7 @@
 #import "GlassMacros.h"
 #import "GlassView3D.h"
 #import "GlassViewCGL3D.h"
-//#import "GlassLayerCGL3D.h"
 #import "GlassViewMTL3D.h"
-//#import "GlassLayerMTL3D.h"
 #import "GlassApplication.h"
 
 //#define VERBOSE
@@ -348,7 +346,7 @@
 {
     KEYLOG("performKeyEquivalent");
 
-    // RT-37093, RT-37399 Command-EQUALS and Command-DOT needs special casing on Mac
+    // JDK-8093711, JDK-8094601 Command-EQUALS and Command-DOT needs special casing on Mac
     // as it is passed through as two calls to performKeyEquivalent, which in turn
     // create extra KeyEvents.
     //
