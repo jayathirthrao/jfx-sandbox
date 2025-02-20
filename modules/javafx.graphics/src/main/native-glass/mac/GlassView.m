@@ -35,11 +35,7 @@
 #import "GlassMacros.h"
 #import "GlassWindow.h"
 #import "GlassView3D.h"
-#import "GlassViewMTL3D.h"
-#import "GlassViewCGL3D.h"
 #import "GlassHelper.h"
-#import "GlassLayerMTL3D.h"
-#import "GlassLayerCGL3D.h"
 
 //#define VERBOSE
 #ifndef VERBOSE
