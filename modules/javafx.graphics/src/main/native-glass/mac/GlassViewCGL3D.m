@@ -259,49 +259,9 @@
     return self->layer;
 }
 
-- (BOOL)becomeFirstResponder
-{
-    return YES;
-}
-
-- (BOOL)acceptsFirstResponder
-{
-    return YES;
-}
-
-- (BOOL)canBecomeKeyView
-{
-    return YES;
-}
-
-- (BOOL)postsBoundsChangedNotifications
-{
-    return NO;
-}
-
-- (BOOL)postsFrameChangedNotifications
-{
-    return NO;
-}
-
 - (BOOL)acceptsFirstMouse:(NSEvent *)theEvent
 {
     return YES;
-}
-
-- (BOOL)isFlipped
-{
-    return YES;
-}
-
-- (BOOL)isOpaque
-{
-    return NO;
-}
-
-- (BOOL)mouseDownCanMoveWindow
-{
-    return NO;
 }
 
 @end
