@@ -368,7 +368,7 @@ public class MSLBackend extends SLBackend {
                                 "#define MSL_LOG(...)\n" +
                                 "#endif\n\n" +
                                 "typedef struct " + shaderType + "_VS_INPUT {\n" +
-                                "    packed_float2 position;\n" +
+                                "    vector_float3 position;\n" +
                                 "    packed_float4 color;\n" +
                                 "    packed_float2 texCoord0;\n" +
                                 "    packed_float2 texCoord1;\n" +

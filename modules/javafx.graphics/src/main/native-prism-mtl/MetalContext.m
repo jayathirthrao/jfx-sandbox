@@ -429,6 +429,11 @@
 
     [renderEncoder setRenderPipelineState:[shader getPipelineState:[rtt isMSAAEnabled]
                                                      compositeMode:compositeMode]];
+    if (depthEnabled) {
+        id<MTLDepthStencilState> depthStencilState =
+            [[self getPipelineManager] getDepthStencilState];
+        [renderEncoder setDepthStencilState:depthStencilState];
+    }
 
     if ([shader getArgumentBufferLength] != 0) {
         [shader copyArgBufferToRingBuffer];
@@ -534,14 +539,6 @@
     worldMatrix = matrix_identity_float4x4;
 }
 
-- (void) resetRenderPass
-{
-    CTX_LOG(@"MetalContext.resetRenderPass()");
-    if (depthEnabled) {
-        rttPassDesc.depthAttachment.loadAction = MTLLoadActionLoad;
-    }
-}
-
 - (void) clearRTT:(float)red
             green:(float)green
              blue:(float)blue
@@ -551,7 +548,25 @@
     CTX_LOG(@">>>> MetalContext.clearRTT() %f, %f, %f, %f", red, green, blue, alpha);
     CTX_LOG(@">>>> MetalContext.clearRTT() %d", clearDepth);
 
-    clearDepthTexture = clearDepth;
+    clearDepthTexture = false;
+    if (clearDepth &&
+        [rtt getDepthTexture] != nil) {
+        CTX_LOG(@"     MetalContext.clearRTT() clearing depth attachment");
+        clearDepthTexture = true;
+        rttPassDesc.depthAttachment.clearDepth = 1.0;
+        rttPassDesc.depthAttachment.loadAction = MTLLoadActionClear;
+        if ([[self getRTT] isMSAAEnabled]) {
+            CTX_LOG(@"MetalContext.clearRTT() MSAA");
+            rttPassDesc.depthAttachment.storeAction = MTLStoreActionStoreAndMultisampleResolve;
+            rttPassDesc.depthAttachment.texture = [rtt getDepthMSAATexture];
+            rttPassDesc.depthAttachment.resolveTexture = [rtt getDepthTexture];
+        } else {
+            CTX_LOG(@"MetalContext.clearRTT() non-MSAA");
+            rttPassDesc.depthAttachment.storeAction = MTLStoreActionStore;
+            rttPassDesc.depthAttachment.texture = [[self getRTT] getDepthTexture];
+            rttPassDesc.depthAttachment.resolveTexture = nil;
+        }
+    }
     clearColor[0] = red;
     clearColor[1] = green;
     clearColor[2] = blue;
@@ -560,6 +575,11 @@
     id<MTLRenderCommandEncoder> renderEncoder = [self getCurrentRenderEncoder];
 
     [renderEncoder setRenderPipelineState:[pipelineManager getClearRttPipeState]];
+    if (clearDepthTexture) {
+        id<MTLDepthStencilState> depthStencilState =
+            [[self getPipelineManager] getDepthStencilState];
+        [renderEncoder setDepthStencilState:depthStencilState];
+    }
     [renderEncoder setFrontFacingWinding:MTLWindingClockwise];
     [renderEncoder setCullMode:MTLCullModeNone];
     [renderEncoder setTriangleFillMode:MTLTriangleFillModeFill];
@@ -592,6 +612,7 @@
 
     if (clearDepthTexture && !depthEnabled) {
         [self endCurrentRenderEncoder];
+        rttPassDesc.depthAttachment = nil;
     }
 
     CTX_LOG(@"<<<< MetalContext.clearRTT()");
@@ -685,6 +706,10 @@
     for (int i = 0; i < numVertices; i++) {
         pVert->position.x = inVerts->x;
         pVert->position.y = inVerts->y;
+        if (inVerts->z != 0.0f) {
+            CTX_LOG(@"fillVB : inVerts->z = %f", inVerts->z);
+        }
+        pVert->position.z = inVerts->z;
 
         pVert->color.r = byteToFloatTable[*(colors)];
         pVert->color.g = byteToFloatTable[*(colors + 1)];
@@ -721,19 +746,28 @@
 - (NSInteger) setDeviceParametersFor2D
 {
     CTX_LOG(@"MetalContext_setDeviceParametersFor2D()");
+    /*if (clearDepthTexture) {
+        CTX_LOG(@"MetalContext_setDeviceParametersFor3D clearDepthTexture is true");
+        rttPassDesc.depthAttachment.clearDepth = 1.0;
+        rttPassDesc.depthAttachment.loadAction = MTLLoadActionClear;
+        clearDepthTexture = false;
+    } else {
+        rttPassDesc.depthAttachment.loadAction = MTLLoadActionLoad;
+    }*/
     return 1;
 }
 
 - (NSInteger) setDeviceParametersFor3D
 {
     CTX_LOG(@"MetalContext_setDeviceParametersFor3D()");
-    if (clearDepthTexture) {
+    /*if (clearDepthTexture) {
         CTX_LOG(@"MetalContext_setDeviceParametersFor3D clearDepthTexture is true");
         rttPassDesc.depthAttachment.clearDepth = 1.0;
         rttPassDesc.depthAttachment.loadAction = MTLLoadActionClear;
+        clearDepthTexture = false;
     } else {
         rttPassDesc.depthAttachment.loadAction = MTLLoadActionLoad;
-    }
+    }*/
 
     // TODO: MTL: Check whether we need to do shader initialization here
     /*if (!phongShader) {
@@ -772,6 +806,8 @@
         [rtt createDepthTexture];
         rttPassDesc.depthAttachment.clearDepth = 1.0;
         rttPassDesc.depthAttachment.loadAction = MTLLoadActionClear;
+    } else {
+        rttPassDesc.depthAttachment.loadAction = MTLLoadActionLoad;
     }
 }
 
@@ -825,6 +861,11 @@
         scissorRect.height = currRtt.height;
     }
     return scissorRect;
+}
+
+- (bool) clearDepth
+{
+    return clearDepthTexture;
 }
 
 - (bool) isDepthEnabled

@@ -55,7 +55,7 @@ struct PrismSourceVertex {
 };
 
 typedef struct VS_INPUT {
-    packed_float2 position;
+    vector_float3 position;
     packed_float4 color;
     packed_float2 texCoord0;
     packed_float2 texCoord1;
@@ -144,7 +144,6 @@ typedef enum VertexInputIndex {
 - (id<MTLRenderPipelineState>) getPhongPipelineState;
 - (NSUInteger) getCurrentBufferIndex;
 
-- (void) resetRenderPass;
 - (void) updateDepthDetails:(bool)depthTest;
 - (void) verifyDepthTexture;
 
@@ -199,6 +198,7 @@ typedef enum VertexInputIndex {
         y:(float)y z:(float)z;
 - (vector_float4) getCameraPosition;
 - (MTLScissorRect) getScissorRect;
+- (bool) clearDepth;
 - (bool) isDepthEnabled;
 - (bool) isScissorEnabled;
 - (bool) isCurrentRTT:(MetalRTTexture*)rttPtr;
