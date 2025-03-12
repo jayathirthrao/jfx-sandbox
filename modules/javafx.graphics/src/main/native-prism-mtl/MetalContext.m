@@ -566,6 +566,8 @@
             rttPassDesc.depthAttachment.texture = [[self getRTT] getDepthTexture];
             rttPassDesc.depthAttachment.resolveTexture = nil;
         }
+    } else {
+        rttPassDesc.depthAttachment = nil;
     }
     clearColor[0] = red;
     clearColor[1] = green;
@@ -610,9 +612,8 @@
                              indexBuffer:indexBuffer
                        indexBufferOffset:0];
 
-    if (clearDepthTexture && !depthEnabled) {
+    if (clearDepth && !depthEnabled) {
         [self endCurrentRenderEncoder];
-        rttPassDesc.depthAttachment = nil;
     }
 
     CTX_LOG(@"<<<< MetalContext.clearRTT()");
