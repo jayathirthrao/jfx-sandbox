@@ -55,7 +55,7 @@ struct PrismSourceVertex {
 };
 
 typedef struct VS_INPUT {
-    vector_float3 position;
+    packed_float2 position;
     packed_float4 color;
     packed_float2 texCoord0;
     packed_float2 texCoord1;

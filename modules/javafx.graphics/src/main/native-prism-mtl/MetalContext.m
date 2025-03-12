@@ -706,10 +706,6 @@
     for (int i = 0; i < numVertices; i++) {
         pVert->position.x = inVerts->x;
         pVert->position.y = inVerts->y;
-        if (inVerts->z != 0.0f) {
-            CTX_LOG(@"fillVB : inVerts->z = %f", inVerts->z);
-        }
-        pVert->position.z = inVerts->z;
 
         pVert->color.r = byteToFloatTable[*(colors)];
         pVert->color.g = byteToFloatTable[*(colors + 1)];

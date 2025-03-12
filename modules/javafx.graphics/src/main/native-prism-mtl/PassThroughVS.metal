@@ -28,7 +28,7 @@
 using namespace metal;
 
 typedef struct VS_INPUT {
-    vector_float3 position;
+    packed_float2 position;
     packed_float4 color;
     packed_float2 texCoord0;
     packed_float2 texCoord1;
@@ -48,7 +48,7 @@ typedef struct VS_OUTPUT
                       constant float4x4 & mvp_matrix [[ buffer(1) ]])
 {
     VS_OUTPUT out;
-    out.position  = vector_float4(v_in[v_id].position.xyz, 1.0) * mvp_matrix;
+    out.position  = vector_float4(v_in[v_id].position.xy, 0.0, 1.0) * mvp_matrix;
     out.fragColor = v_in[v_id].color;
     out.texCoord0 = v_in[v_id].texCoord0;
     out.texCoord1 = v_in[v_id].texCoord1;
