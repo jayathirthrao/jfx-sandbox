@@ -85,7 +85,7 @@ NSString *GPUTraceFilename = @"file:///tmp/fx_metal.gputrace";
         depthStencilDescriptor.depthWriteEnabled = NO;
         depthStencilState[0] = [[context getDevice] newDepthStencilStateWithDescriptor:depthStencilDescriptor];
 
-        depthStencilDescriptor.depthCompareFunction = MTLCompareFunctionLess;
+        depthStencilDescriptor.depthCompareFunction = MTLCompareFunctionLessEqual;
         depthStencilDescriptor.depthWriteEnabled = YES;
         depthStencilState[1] = [[context getDevice] newDepthStencilStateWithDescriptor:depthStencilDescriptor];
     }
