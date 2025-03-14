@@ -743,29 +743,12 @@
 - (NSInteger) setDeviceParametersFor2D
 {
     CTX_LOG(@"MetalContext_setDeviceParametersFor2D()");
-    /*if (clearDepthTexture) {
-        CTX_LOG(@"MetalContext_setDeviceParametersFor3D clearDepthTexture is true");
-        rttPassDesc.depthAttachment.clearDepth = 1.0;
-        rttPassDesc.depthAttachment.loadAction = MTLLoadActionClear;
-        clearDepthTexture = false;
-    } else {
-        rttPassDesc.depthAttachment.loadAction = MTLLoadActionLoad;
-    }*/
     return 1;
 }
 
 - (NSInteger) setDeviceParametersFor3D
 {
     CTX_LOG(@"MetalContext_setDeviceParametersFor3D()");
-    /*if (clearDepthTexture) {
-        CTX_LOG(@"MetalContext_setDeviceParametersFor3D clearDepthTexture is true");
-        rttPassDesc.depthAttachment.clearDepth = 1.0;
-        rttPassDesc.depthAttachment.loadAction = MTLLoadActionClear;
-        clearDepthTexture = false;
-    } else {
-        rttPassDesc.depthAttachment.loadAction = MTLLoadActionLoad;
-    }*/
-
     // TODO: MTL: Check whether we need to do shader initialization here
     /*if (!phongShader) {
         phongShader = ([[MetalPhongShader alloc] createPhongShader:self]);
