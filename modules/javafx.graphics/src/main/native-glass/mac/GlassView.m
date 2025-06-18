@@ -34,7 +34,7 @@
 
 #import "GlassMacros.h"
 #import "GlassWindow.h"
-#import "GlassView3D.h"
+#import "GlassViewEvent.h"
 #import "GlassHelper.h"
 
 //#define VERBOSE
@@ -44,11 +44,11 @@
     #define LOG(MSG, ...) GLASS_LOG(MSG, ## __VA_ARGS__);
 #endif
 
-static inline GlassView3D<GlassView>* getGlassView(JNIEnv *env, jlong jPtr)
+static inline GlassViewEvent<GlassView>* getGlassView(JNIEnv *env, jlong jPtr)
 {
     assert(jPtr != 0L);
 
-    return (GlassView3D<GlassView>*)jlong_to_ptr(jPtr);
+    return (GlassViewEvent<GlassView>*)jlong_to_ptr(jPtr);
 }
 
 #pragma mark --- JNI
@@ -297,7 +297,7 @@ JNIEXPORT jlong JNICALL Java_com_sun_glass_ui_mac_MacView__1create
 
         //NSLog(@"--- hostView bounds = (%f, %f) - (%f, %f)", [hostView bounds].origin.x, [hostView bounds].origin.y, [hostView bounds].size.width, [hostView bounds].size.height);
 
-        NSView* view = [[GlassView3D alloc] initWithFrame:[hostView bounds] withJview:jView withJproperties:jCapabilities];
+        NSView* view = [[GlassViewEvent alloc] initWithFrame:[hostView bounds] withJview:jView withJproperties:jCapabilities];
         [view setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
 
         [hostView addSubview:view];
@@ -337,41 +337,14 @@ JNIEXPORT jlong JNICALL Java_com_sun_glass_ui_mac_MacView__1getNativeFrameBuffer
     GLASS_ASSERT_MAIN_JAVA_THREAD(env);
     GLASS_POOL_ENTER;
     {
-        GlassView3D<GlassView> *view = getGlassView(env, jPtr);
-        GlassLayer3D *layer = (GlassLayer3D*)[view getLayer];
+        GlassViewEvent<GlassView> *view = getGlassView(env, jPtr);
+        GlassLayer *layer = (GlassLayer*)[view getLayer];
         fb = (jlong) [[layer getPainterOffscreen] fbo];
     }
     GLASS_POOL_EXIT;
     GLASS_CHECK_EXCEPTION(env);
 
     return fb;
-}
-
-/*
- * Class:     com_sun_glass_ui_mac_MacView
- * Method:    _getNativeLayer
- * Signature: (J)J
- */
-JNIEXPORT jlong JNICALL Java_com_sun_glass_ui_mac_MacView__1getNativeLayer
-(JNIEnv *env, jobject jView, jlong jPtr)
-{
-    LOG("Java_com_sun_glass_ui_mac_MacView__1_getNativeLayer");
-    LOG("   view: %p", jPtr);
-    if (!jPtr) return 0L;
-
-    jlong ptr = 0L;
-
-    GLASS_ASSERT_MAIN_JAVA_THREAD(env);
-    GLASS_POOL_ENTER;
-    {
-        GlassView3D<GlassView> *view = getGlassView(env, jPtr);
-        CALayer *layer = [view getLayer];
-        ptr = ptr_to_jlong(layer);
-    }
-    GLASS_POOL_EXIT;
-    GLASS_CHECK_EXCEPTION(env);
-
-    return ptr;
 }
 
 /*

@@ -28,12 +28,14 @@
 #import <OpenGL/OpenGL.h>
 
 #import "GlassView.h"
-#import "GlassLayer3D.h"
+#import "GlassLayer.h"
 
-// 3D version of Glass providing OpenGL context through CAOpenGLLayer
-@interface GlassViewCGL3D : NSOpenGLView
+// 3D version of Glass providing OpenGL context through CAOpenGLLayer.
+// GlassViewCGL is not subclass of GlassViewEvent, it is a subView
+// and it handles NSView's OpenGL specific drawing logic
+@interface GlassViewCGL : NSOpenGLView
 {
-    GlassLayer3D* layer;
+    GlassLayer* layer;
 
     CGFloat             _backgroundR;
     CGFloat             _backgroundG;
@@ -41,7 +43,7 @@
     CGFloat             _backgroundA;
 }
 
-- (GlassLayer3D*)getLayer;
+- (GlassLayer*)getLayer;
 - (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties;
 
 @end

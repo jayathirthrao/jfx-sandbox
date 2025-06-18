@@ -26,15 +26,17 @@
 #import <Cocoa/Cocoa.h>
 
 #import "GlassView.h"
-#import "GlassLayer3D.h"
+#import "GlassLayer.h"
 
-// 3D version of Glass for Metal using CAMetalLayer
-@interface GlassViewMTL3D : NSView
+// 3D version of Glass for Metal using CAMetalLayer.
+// GlassViewMTL is not subclass of GlassViewEvent, it is a subView
+// and it handles NSView's Metal specific drawing logic
+@interface GlassViewMTL : NSView
 {
-    GlassLayer3D* layer;
+    GlassLayer* layer;
 }
 
-- (GlassLayer3D*)getLayer;
+- (GlassLayer*)getLayer;
 - (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties;
 
 @end

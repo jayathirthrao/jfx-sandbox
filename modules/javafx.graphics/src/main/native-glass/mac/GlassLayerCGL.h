@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,32 +23,28 @@
  * questions.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <OpenGL/gl.h>
+#import <OpenGL/OpenGL.h>
 
-#import "GlassView.h"
-#import "GlassLayer3D.h"
+#import "GlassOffscreen.h"
 
-@interface GlassView3D : NSView <GlassView, NSTextInputClient>
+// GlassLayerCGL is not subclass of GlassLayer, it is a subLayer
+// and it handles CALayer's OpenGL specific drawing logic
+@interface GlassLayerCGL : CAOpenGLLayer
 {
-    GlassViewDelegate   *_delegate;
-    NSTrackingArea      *_trackingArea;
-    GlassLayer3D *layer;
-
-    NSView *subView;
-
-    NSAttributedString *nsAttrBuffer;
-    BOOL imEnabled;
-    BOOL handlingKeyEvent;
-    BOOL didCommitText;
+    GlassOffscreen *_glassOffscreen;
+    GlassOffscreen *_painterOffscreen;
 
     BOOL isHiDPIAware;
-
-    NSEvent *lastKeyEvent;
 }
 
-- (GlassViewDelegate*)delegate;
-- (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties;
-- (void)setFrameOrigin:(NSPoint)newOrigin;
-- (CALayer*)getLayer;
+- (id)initWithSharedContext:(CGLContextObj)ctx
+           andClientContext:(CGLContextObj)clCtx
+             withHiDPIAware:(BOOL)HiDPIAware
+             withIsSwPipe:(BOOL)isSwPipe;
+
+- (GlassOffscreen*)getPainterOffscreen;
+- (GlassOffscreen*)getGlassOffscreen;
+- (void)hostOffscreen:(GlassOffscreen*)offscreen;
 
 @end

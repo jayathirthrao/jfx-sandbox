@@ -30,7 +30,7 @@
 #import "GlassViewDelegate.h"
 
 // main GlassView protocol
-// TODO: now that we removed GlassView2D, we should collapse the delegate back into GlassView3D
+// TODO: now that we removed GlassView2D, we should collapse the delegate back into GlassViewEvent
 // and use Obj-C catgegories to partition the implementation (just like GlassWindow)
 @protocol GlassView <NSObject>
 

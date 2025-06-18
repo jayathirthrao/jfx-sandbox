@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,23 +23,32 @@
  * questions.
  */
 
-#import <Metal/Metal.h>
-#import <QuartzCore/CAMetalLayer.h>
-#import "GlassOffscreen.h"
+#import <Cocoa/Cocoa.h>
 
-@interface GlassLayerMTL3D : CAMetalLayer
+#import "GlassView.h"
+#import "GlassLayer.h"
+
+@interface GlassViewEvent : NSView <GlassView, NSTextInputClient>
 {
-    GlassOffscreen *_painterOffscreen;
+    GlassViewDelegate   *_delegate;
+    NSTrackingArea      *_trackingArea;
+    GlassLayer *layer;
+
+    NSView *subView;
+
+    NSAttributedString *nsAttrBuffer;
+    BOOL imEnabled;
+    BOOL handlingKeyEvent;
+    BOOL didCommitText;
 
     BOOL isHiDPIAware;
-    id<MTLCommandQueue> _blitCommandQueue;
+
+    NSEvent *lastKeyEvent;
 }
 
-- (id) init:(long)mtlCommandQueuePtr
-       withIsSwPipe:(BOOL)isSwPipe;
+- (GlassViewDelegate*)delegate;
+- (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties;
+- (void)setFrameOrigin:(NSPoint)newOrigin;
+- (CALayer*)getLayer;
 
-- (void) blitToScreen;
-
-- (GlassOffscreen*)getPainterOffscreen;
-- (void)display;
 @end

@@ -31,9 +31,9 @@
 #import "com_sun_glass_ui_mac_MacGestureSupport.h"
 #import "GlassKey.h"
 #import "GlassMacros.h"
-#import "GlassView3D.h"
-#import "GlassViewCGL3D.h"
-#import "GlassViewMTL3D.h"
+#import "GlassViewEvent.h"
+#import "GlassViewCGL.h"
+#import "GlassViewMTL.h"
 #import "GlassApplication.h"
 
 //#define VERBOSE
@@ -77,11 +77,11 @@
 // http://developer.apple.com/library/mac/#technotes/tn2085/_index.html
 //#define ENABLE_MULTITHREADED_GL
 
-@implementation GlassView3D
+@implementation GlassViewEvent
 
 - (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties
 {
-    LOG("GlassView3D initWithFrame:withJview:withJproperties");
+    LOG("GlassViewEvent initWithFrame:withJview:withJproperties");
 
     GET_MAIN_JENV;
     long mtlCommandQueuePtr = 0l;
@@ -107,7 +107,7 @@
         }
     }
 
-    // TODO : We again fetch isHiDPIAware in GlassViewCGL3D
+    // TODO : We again fetch isHiDPIAware in GlassViewCGL
     // Try to merge it
     self->isHiDPIAware = NO;
     if (jproperties != NULL)
@@ -126,13 +126,13 @@
     self = [super initWithFrame:frame];
     if (self != nil) {
         if (mtlCommandQueuePtr != 0l) {
-            GlassViewMTL3D* mtlSubView;
-            subView = mtlSubView = [[GlassViewMTL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
+            GlassViewMTL* mtlSubView;
+            subView = mtlSubView = [[GlassViewMTL alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
             self->layer = [mtlSubView getLayer];
             self->isHiDPIAware = YES;
         } else {
-            GlassViewCGL3D* cglSubView;
-            subView = cglSubView = [[GlassViewCGL3D alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
+            GlassViewCGL* cglSubView;
+            subView = cglSubView = [[GlassViewCGL alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
             self->layer = [cglSubView getLayer];
         }
         [subView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
@@ -735,7 +735,7 @@
     return value;
 }
 
-- (GlassLayer3D*)getLayer
+- (GlassLayer*)getLayer
 {
     return self->layer;
 }
