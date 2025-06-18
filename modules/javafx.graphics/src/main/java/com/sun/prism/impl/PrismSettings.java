@@ -208,7 +208,7 @@ public final class PrismSettings {
             if (PlatformUtil.isWindows()) {
                 tryOrderArr = new String[] { "d3d", "sw" };
             } else if (PlatformUtil.isMac()) {
-                tryOrderArr = new String[] { "mtl", "es2", "sw" };
+                tryOrderArr = new String[] { "es2", "mtl", "sw" };
             } else if (PlatformUtil.isIOS()) {
                 tryOrderArr = new String[] { "es2" };
             } else if (PlatformUtil.isAndroid()) {
