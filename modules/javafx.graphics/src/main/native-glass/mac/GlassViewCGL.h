@@ -30,8 +30,7 @@
 #import "GlassView.h"
 #import "GlassLayer.h"
 
-// 3D version of Glass providing OpenGL context through CAOpenGLLayer.
-// GlassViewCGL is not subclass of GlassViewEvent, it is a subView
+// GlassViewCGL is not subclass of GlassView3D, it is a subView
 // and it handles NSView's OpenGL specific drawing logic
 @interface GlassViewCGL : NSOpenGLView
 {

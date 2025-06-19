@@ -28,8 +28,7 @@
 #import "GlassView.h"
 #import "GlassLayer.h"
 
-// 3D version of Glass for Metal using CAMetalLayer.
-// GlassViewMTL is not subclass of GlassViewEvent, it is a subView
+// GlassViewMTL is not subclass of GlassView3D, it is a subView
 // and it handles NSView's Metal specific drawing logic
 @interface GlassViewMTL : NSView
 {

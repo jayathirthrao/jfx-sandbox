@@ -31,7 +31,7 @@
 #import "com_sun_glass_ui_mac_MacGestureSupport.h"
 #import "GlassKey.h"
 #import "GlassMacros.h"
-#import "GlassViewEvent.h"
+#import "GlassView3D.h"
 #import "GlassViewCGL.h"
 #import "GlassViewMTL.h"
 #import "GlassApplication.h"
@@ -77,11 +77,11 @@
 // http://developer.apple.com/library/mac/#technotes/tn2085/_index.html
 //#define ENABLE_MULTITHREADED_GL
 
-@implementation GlassViewEvent
+@implementation GlassView3D
 
 - (id)initWithFrame:(NSRect)frame withJview:(jobject)jView withJproperties:(jobject)jproperties
 {
-    LOG("GlassViewEvent initWithFrame:withJview:withJproperties");
+    LOG("GlassView3D initWithFrame:withJview:withJproperties");
 
     GET_MAIN_JENV;
     long mtlCommandQueuePtr = 0l;
