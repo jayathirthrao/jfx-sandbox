@@ -34,7 +34,7 @@
 #import "GlassViewCGL.h"
 #import "GlassApplication.h"
 
-//#define VERBOSE
+#define VERBOSE
 #ifndef VERBOSE
     #define LOG(MSG, ...)
 #else
@@ -185,6 +185,7 @@
     }
     if (sharedCGL == NULL)
     {
+        LOG("GlassViewCGL _initialize3dWithJproperties : using software pipeline");
         // this can happen in Rain or clients other than Prism (ie. device details do not have the shared context set)
         sharedCGL = clientCGL;
         isSwPipe = YES;

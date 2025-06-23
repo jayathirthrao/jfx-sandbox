@@ -35,7 +35,7 @@
 #import "GlassApplication.h"
 #import "GlassScreen.h"
 
-//#define VERBOSE
+#define VERBOSE
 #ifndef VERBOSE
     #define LOG(MSG, ...)
 #else

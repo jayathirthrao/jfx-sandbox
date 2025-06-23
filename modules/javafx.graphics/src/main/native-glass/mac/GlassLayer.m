@@ -50,14 +50,14 @@ static NSArray *allModes = nil;
     self = [super init];
     if (self != nil)
     {
-        if (mtlCommandQueuePtr != 0l) { // MTL
+        //if (mtlCommandQueuePtr != 0l) { // MTL
             GlassLayerMTL* mtlLayer = [[GlassLayerMTL alloc]
                 init:mtlCommandQueuePtr
                 withIsSwPipe:isSwPipe];
             self->painterOffScreen = [mtlLayer getPainterOffscreen];
             self->glassOffScreen = nil;
             [self addSublayer:mtlLayer];
-        } else {
+        /*} else {
             GlassLayerCGL* cglLayer = [[GlassLayerCGL alloc]
                 initWithSharedContext:(CGLContextObj)ctx
                      andClientContext:(CGLContextObj)clCtx
@@ -66,7 +66,7 @@ static NSArray *allModes = nil;
             self->painterOffScreen = [cglLayer getPainterOffscreen];
             self->glassOffScreen = [cglLayer getGlassOffscreen];
             [self addSublayer:cglLayer];
-        }
+        }*/
         self->isHiDPIAware = HiDPIAware;
         LOG("   GlassLayer context: %p", ctx);
 

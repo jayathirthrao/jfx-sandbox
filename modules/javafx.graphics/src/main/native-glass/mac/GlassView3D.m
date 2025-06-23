@@ -125,16 +125,16 @@
 
     self = [super initWithFrame:frame];
     if (self != nil) {
-        if (mtlCommandQueuePtr != 0l) {
+        //if (mtlCommandQueuePtr != 0l) {
             GlassViewMTL* mtlSubView;
             subView = mtlSubView = [[GlassViewMTL alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
             self->layer = [mtlSubView getLayer];
             self->isHiDPIAware = YES;
-        } else {
+        /*} else {
             GlassViewCGL* cglSubView;
             subView = cglSubView = [[GlassViewCGL alloc] initWithFrame:frame withJview:jView withJproperties:jproperties];
             self->layer = [cglSubView getLayer];
-        }
+        }*/
         [subView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
         [self addSubview:subView];
         self->_delegate = [[GlassViewDelegate alloc] initWithView:self withJview:jView];
